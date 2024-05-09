@@ -1,11 +1,15 @@
-package org.glazweq.eduportal.config;
+package org.glazweq.eduportal.security.config;
+import lombok.AllArgsConstructor;
+import org.glazweq.eduportal.user.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configurers.userdetails.DaoAuthenticationConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -26,19 +30,29 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
+@AllArgsConstructor
 public class WebSecurityConfig {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final AppUserService appUserService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+//    @Autowired
+//    private UserDetailsService userDetailsService;
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
         return (web) -> web.ignoring().requestMatchers("/static/**");
     }
+//    @Bean
+//    public static PasswordEncoder passwordEncoder(){
+//        return new BCryptPasswordEncoder();
+//    }
     @Bean
-    public static PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider provider =
+                new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(bCryptPasswordEncoder);
+        provider.setUserDetailsService(appUserService);
+        return provider;
     }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -48,6 +62,8 @@ public class WebSecurityConfig {
                         authorize
                                 .requestMatchers("/").permitAll()
                                 .requestMatchers("/main").permitAll()
+                                .requestMatchers("/registration").permitAll()
+                                .requestMatchers("/registration/save").permitAll()
 
                 ).formLogin(
                         form -> form
@@ -65,10 +81,10 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder());
-    }
+//    @Autowired
+//    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+//        auth
+//                .userDetailsService(userDetailsService)
+//                .passwordEncoder(passwordEncoder());
+//    }
 }
