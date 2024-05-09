@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Registration and Login System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+<body>
+
+
+<!--import header-->
+<!--<div th:replace="~{fragments/headerAuth.html :: header}"></div>-->
+
+
+<main>
+    <div class="ring ring-register">
+
+
+        <div class="container">
+            <h2>Registration</h2>
+            <div th:if="${param.success}">
+                <div class="alert alert-info">
+                    You have successfully registered our app!
+                </div>
+            </div>
+            <form
+                    method="post"
+                    role="form"
+                    th:action="@{/registration/save}"
+                    th:object="${user}"
+            >
+
+                <div  class="inputBx">
+                    <input
+                            class="form-control"
+                            id="firstName"
+                            name="firstName"
+                            placeholder="Enter first name"
+                            th:field="*{firstName}"
+                            type="text"
+                    />
+                    <p th:errors = "*{firstName}" class="text-danger"
+                       th:if="${#fields.hasErrors('firstName')}"></p>
+                </div>
+
+                <div class="inputBx">
+                    <input
+                            class="form-control"
+                            id="lastName"
+                            name="lastName"
+                            placeholder="Enter last name"
+                            th:field="*{lastName}"
+                            type="text"
+                    />
+                    <p th:errors = "*{lastName}" class="text-danger"
+                       th:if="${#fields.hasErrors('lastName')}"></p>
+                </div>
+                <div class="inputBx">
+                    <input
+                            class="form-control"
+                            id="email"
+                            name="email"
+                            placeholder="Enter stuba email address"
+                            th:field="*{email}"
+                            type="email"
+                    />
+                    <p th:errors = "*{email}" class="text-danger"
+                       th:if="${#fields.hasErrors('email')}"></p>
+                </div>
+
+                <div class="inputBx">
+                        <input
+                            class="form-control"
+                            id="password"
+                            name="password"
+                            placeholder="Enter password"
+                            th:field="*{password}"
+                            type="text"
+                        />
+                    <div class="inputBx">
+                        <button type="submit" class="custom-btn btn-2"><span>Register</span></button>
+                    </div>
+                    <div class="links register-link">
+                        <a  th:href="@{/login}">Login</a>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

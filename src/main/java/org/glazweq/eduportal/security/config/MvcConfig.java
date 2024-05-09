@@ -1,4 +1,4 @@
-package org.glazweq.eduportal.config;
+package org.glazweq.eduportal.security.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
