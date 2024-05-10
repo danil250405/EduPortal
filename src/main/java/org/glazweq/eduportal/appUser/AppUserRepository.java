@@ -1,4 +1,4 @@
-package org.glazweq.eduportal.user;
+package org.glazweq.eduportal.appUser;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
