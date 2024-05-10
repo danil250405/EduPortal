@@ -1,6 +1,7 @@
 package org.glazweq.eduportal.controller;
 
 import lombok.AllArgsConstructor;
+import org.glazweq.eduportal.registration.RegistrationService;
 import org.glazweq.eduportal.user.AppUser;
 import org.glazweq.eduportal.user.AppUserService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @AllArgsConstructor
 public class AuthController {
     AppUserService appUserService;
+    RegistrationService registrationService;
     @GetMapping("/registration")
     public String showRegistrationForm(Model model) {
         // create model object to store form data
@@ -26,33 +28,42 @@ public class AuthController {
     public String registration(@ModelAttribute("user") AppUser appUser,
                                BindingResult result,
                                Model model) {
-        System.out.println("IN Save mapping");
 
-        UserDetails existingUserByEmail = appUserService.loadUserByUsername(appUser.getEmail());
-        System.out.println("IN Save mapping");
-        if (result.hasErrors()) {
-            model.addAttribute("user", appUser);
-            System.out.println("1");
-            return "registration-page";
-        }
-        //check email
-        else if (existingUserByEmail.getUsername() != null && !existingUserByEmail.getUsername().isEmpty()) {
-            result.rejectValue("email", null,
-                    "You already registered with this email!");
-            System.out.println("2");
+        String messageToClient;
+
+        // Проверка email
+        messageToClient = appUserService.getMsgAboutEmail(appUser.getEmail());
+        if (!messageToClient.equals("success")) {
+            result.rejectValue("email", null, messageToClient);
             return "registration-page";
         }
 
-        else if (!appUser.getEmail().endsWith("@stuba.sk")) {
-            result.rejectValue("email", null,
-                    "Email must be type xeinstein@stuba.sk");
-            System.out.println("3");
+        // Проверка firstName
+        messageToClient = appUserService.getMsgAboutFirstName(appUser.getFirstName());
+        if (!messageToClient.equals("success")) {
+            result.rejectValue("firstName", null, messageToClient);
             return "registration-page";
         }
 
+        // Проверка lastName
+        messageToClient = appUserService.getMsgAboutLastName(appUser.getLastName());
+        if (!messageToClient.equals("success")) {
+            result.rejectValue("lastName", null, messageToClient);
+            return "registration-page";
+        }
 
-        System.out.println("4");
-        model.addAttribute("success", true);
+        // Проверка password
+        messageToClient = appUserService.getMsgAboutPassword(appUser.getPassword());
+        if (!messageToClient.equals("success")) {
+            result.rejectValue("password", null, messageToClient);
+            return "registration-page";
+        }
+
+        // Если все проверки пройдены успешно, выполняется регистрация пользователя
+        appUserService.signUpUser(appUser);
+
+        // Возможно, здесь нужно перенаправление на другую страницу или какие-то другие действия
+
 //        appUserService.saveUser(appUser);
         return "redirect:/main";
     }
