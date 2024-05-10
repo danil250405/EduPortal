@@ -40,6 +40,7 @@
                             placeholder="Enter first name"
                             th:field="*{firstName}"
                             type="text"
+                            required
                     />
                     <p th:errors = "*{firstName}" class="text-danger"
                        th:if="${#fields.hasErrors('firstName')}"></p>
@@ -53,6 +54,7 @@
                             placeholder="Enter last name"
                             th:field="*{lastName}"
                             type="text"
+                            required
                     />
                     <p th:errors = "*{lastName}" class="text-danger"
                        th:if="${#fields.hasErrors('lastName')}"></p>
@@ -65,6 +67,7 @@
                             placeholder="Enter stuba email address"
                             th:field="*{email}"
                             type="email"
+                            required
                     />
                     <p th:errors = "*{email}" class="text-danger"
                        th:if="${#fields.hasErrors('email')}"></p>
@@ -78,7 +81,10 @@
                             placeholder="Enter password"
                             th:field="*{password}"
                             type="text"
+                            required
                         />
+                    <p th:errors = "*{password}" class="text-danger"
+                       th:if="${#fields.hasErrors('password')}"></p>
                     <div class="inputBx">
                         <button type="submit" class="custom-btn btn-2"><span>Register</span></button>
                     </div>

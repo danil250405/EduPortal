@@ -3,6 +3,7 @@ package org.glazweq.eduportal.user;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -74,5 +75,17 @@ public class AppUser implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
+    }
+
+    public AppUser(String firstName,
+                   String lastName,
+                   String email,
+                   String password,
+                   AppUserRole appUserRole) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.appUserRole = appUserRole;
     }
 }
