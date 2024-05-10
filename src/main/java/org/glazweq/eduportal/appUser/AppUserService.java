@@ -110,7 +110,8 @@ public class AppUserService implements UserDetailsService {
     }
 
 
-    private LocalDateTime getCurrentDateTime() {
-        return LocalDateTime.now();
+
+    public int enableAppUser(String email) {
+        return appUserRepository.enableAppUser(email);
     }
 }
