@@ -1,9 +1,9 @@
 package org.glazweq.eduportal.registration;
 
 import lombok.AllArgsConstructor;
-import org.glazweq.eduportal.user.AppUser;
-import org.glazweq.eduportal.user.AppUserRole;
-import org.glazweq.eduportal.user.AppUserService;
+import org.glazweq.eduportal.appUser.AppUser;
+import org.glazweq.eduportal.appUser.AppUserRole;
+import org.glazweq.eduportal.appUser.AppUserService;
 import org.springframework.stereotype.Service;
 
 @Service
