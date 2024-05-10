@@ -45,6 +45,7 @@ public class WebSecurityConfig {
 
                         authorize
                                 .requestMatchers("/").permitAll()
+                                .requestMatchers("/login").permitAll()
                                 .requestMatchers("/main").permitAll()
                                 .requestMatchers("/registration").permitAll()
                                 .requestMatchers("/registration/save").permitAll()
