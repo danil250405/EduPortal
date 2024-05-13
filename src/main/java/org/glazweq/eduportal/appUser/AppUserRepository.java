@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     Optional<AppUser> findByEmail(String email);
     AppUser findAppUserByEmail(String email);
+//    вернет 1, если запись была успешно обновлена, или 0, если запись с таким адресом электронной почты не была найдена.
     @Transactional
     @Modifying
     @Query("UPDATE AppUser a " +

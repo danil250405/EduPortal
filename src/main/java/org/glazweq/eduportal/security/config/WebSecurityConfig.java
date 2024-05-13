@@ -56,6 +56,7 @@ public class WebSecurityConfig {
 
                                 .loginPage("/login")
                                 .loginProcessingUrl("/login")
+
                                 .defaultSuccessUrl("/main")
                                 .permitAll()
 

@@ -1,10 +1,12 @@
 package org.glazweq.eduportal.registration;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.glazweq.eduportal.appUser.AppUserRole;
 import org.glazweq.eduportal.registration.RegistrationService;
 import org.glazweq.eduportal.appUser.AppUser;
 import org.glazweq.eduportal.appUser.AppUserService;
+import org.glazweq.eduportal.registration.token.ConfirmationToken;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -72,16 +74,18 @@ public class AuthController {
 
         return "redirect:/main";
     }
-    @GetMapping(path = "/registration/confirm")
-    public String confirm(@RequestParam("token") String token) throws InterruptedException {
-        System.out.println("in confirm getMapping");
-        String confirmationToken = registrationService.confirmToken(token);
-        if (confirmationToken.equals("confirmed")) {
-            System.out.println("in conf gM with confirmed token");
 
+    @GetMapping(path = "/registration/confirm")
+    public String confirm(@RequestParam("token") String token, HttpServletRequest request) throws InterruptedException {
+        System.out.println("in confirm getMapping");
+        ConfirmationToken confirmationToken = registrationService.confirmToken(token);
+
+        if (confirmationToken != null) {
+            System.out.println("in conf gM with confirmed token");
+            registrationService.authWithHttpServletRequestAndToken(request, confirmationToken);
         }
-        else System.out.println("in conf gM with not confirmed token");
-        return "main-page";
+        else System.out.println("in conf gM with NOT! confirmed token");
+        return "redirect:/main";
     }
     private LocalDateTime getCurrentDateTime() {
         return LocalDateTime.now();
