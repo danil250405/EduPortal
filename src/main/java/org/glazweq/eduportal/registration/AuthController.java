@@ -72,9 +72,16 @@ public class AuthController {
 
         return "redirect:/main";
     }
-    @GetMapping(path = "confirm")
-    public String confirm(@RequestParam("token") String token) {
-        return registrationService.confirmToken(token);
+    @GetMapping(path = "/registration/confirm")
+    public String confirm(@RequestParam("token") String token) throws InterruptedException {
+        System.out.println("in confirm getMapping");
+        String confirmationToken = registrationService.confirmToken(token);
+        if (confirmationToken.equals("confirmed")) {
+            System.out.println("in conf gM with confirmed token");
+
+        }
+        else System.out.println("in conf gM with not confirmed token");
+        return "main-page";
     }
     private LocalDateTime getCurrentDateTime() {
         return LocalDateTime.now();
