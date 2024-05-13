@@ -1,16 +1,24 @@
 package org.glazweq.eduportal.registration;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.glazweq.eduportal.appUser.AppUser;
 import org.glazweq.eduportal.appUser.AppUserService;
 import org.glazweq.eduportal.email.EmailSender;
 import org.glazweq.eduportal.registration.token.ConfirmationToken;
+import org.glazweq.eduportal.registration.token.ConfirmationTokenRepository;
 import org.glazweq.eduportal.registration.token.ConfirmationTokenService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
+
+import static org.hibernate.sql.ast.SqlTreeCreationLogger.LOGGER;
 
 @Service
 @AllArgsConstructor
@@ -18,6 +26,7 @@ public class RegistrationService {
     EmailValidator emailValidator;
     AppUserService appUserService;
     ConfirmationTokenService confirmationTokenService;
+    ConfirmationTokenRepository confirmationTokenRepository;
     private final EmailSender emailSender;
 
     public void register(AppUser appUser) {
@@ -27,13 +36,14 @@ public class RegistrationService {
 //        TODO:localhost:3000 change to variable and port
     }
     @Transactional
-    public String confirmToken(String token) throws InterruptedException {
+    public ConfirmationToken confirmToken(String token) throws InterruptedException {
         ConfirmationToken confirmationToken = confirmationTokenService.getToken(token)
                 .orElseThrow(() ->
                         new IllegalStateException("token not found"));
 
         if (confirmationToken.getConfirmedAt() != null) {
             throw new IllegalStateException("email already confirmed");
+
         }
 
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
@@ -46,13 +56,29 @@ public class RegistrationService {
         appUserService.enableAppUser(
                 confirmationToken.getAppUser().getEmail());
         System.out.println("token is confirmed");
-        TimeUnit.SECONDS.sleep(2);
-        return "confirmed";
+
+        return confirmationToken;
     }
 
 
 
-
+    public void authWithHttpServletRequestAndToken(HttpServletRequest request, ConfirmationToken confirmationToken) {
+        UserDetails appUser = appUserService.loadUserByUsername(confirmationToken.getAppUser().getUsername());
+//        userDetailsManager.updateUser(appUser);
+        String username = appUser.getUsername();
+        String password = appUser.getPassword();
+        System.out.println("User is " + appUser.getUsername());
+        if (appUser.isEnabled()) System.out.println("he is turn on");
+        else System.out.println("he is torn off");
+        System.out.println("in authWithHttpServletRequestAndToken");
+        try {
+            request.login(username, password);
+            System.out.println("in good way authWithHttpServletRequestAndToken");
+        } catch (ServletException e) {
+            System.out.println("in bad way authWithHttpServletRequestAndToken");
+            LOGGER.error("Error while login ", e);
+        }
+    }
 
     private String buildEmail(String name, String link) {
         return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +
