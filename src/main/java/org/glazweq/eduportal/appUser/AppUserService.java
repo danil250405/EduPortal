@@ -39,9 +39,9 @@ public class AppUserService implements UserDetailsService {
                 return "This email is already taken";
             }
         }
-        if (!email.endsWith("@stuba.sk")) {
-            return "Email must end with @stuba.sk.";
-        }
+//        if (!email.endsWith("@stuba.sk")) {
+//            return "Email must end with @stuba.sk.";
+//        }
 
         return "success";
     }
