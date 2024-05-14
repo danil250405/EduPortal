@@ -56,9 +56,13 @@ public class WebSecurityConfig {
                                 .requestMatchers("/registration/confirm").permitAll()
 
                                 .requestMatchers("/faculties").permitAll()
+                                .requestMatchers("/faculties/{facultyAbbreviation}").permitAll()
 //                                TODO: permit only admins
                                 .requestMatchers("/faculties/add").permitAll()
                                 .requestMatchers("/faculties/delete").permitAll()
+                                .requestMatchers("/specialties/add").permitAll()
+                                .requestMatchers("/specialties/delete").permitAll()
+
                 ).formLogin(
                         form -> form
 

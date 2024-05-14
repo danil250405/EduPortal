@@ -4,7 +4,7 @@
 >
 <head>
     <meta charset="UTF-8">
-    <title>Faculties</title>
+    <title>Specialty</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -22,28 +22,25 @@
 
     <p th:text="${infoMessage}">Info message</p>
     <ul>
-        <li  th:each="faculty : ${faculties}">
-            <a th:href="@{/faculties/{facultyAbbreviation}(facultyAbbreviation=${faculty.abbreviation})}">
-
-            <p th:text="${faculty.name}">Faculty name</p>
-               <span th:text="${faculty.abbreviation}"></span>
-           </a>
+        <li  th:each="specialty : ${specialties}">
+            <p th:text="${specialty.name}">Specialty name</p>
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
-                    th:data-faculty-id="${faculty.id}" th:data-faculty-name="${faculty.name}">
+                    th:data-specialty-id="${specialty.id}" th:data-specialty-name="${specialty.name}" th:data-specialty-faculty-abbr="${specialty.faculty.abbreviation}">
                 Delete
             </button>
         </li>
     </ul>
-    <form th:action="@{/faculties/add}" method="post">
-        <label>Faculty name:</label>
-        <input required type="text" id="faculty-name" name="faculty-name"/>
-        <label>Faculty abbreviation:</label>
-        <input required type="text" id="faculty-abbreviation" name="faculty-abbreviation"/>
-        <button type="submit">Add Faculty</button>
+    <form th:action="@{/specialties/add}" method="post">
+        <label>Specialty name:</label>
+        <input type="text" id="specialty-name" name="specialty-name"/>
+        <label>Specialty abbreviation:</label>
+        <input type="text" id="specialty-abbreviation" name="specialty-abbreviation"/>
+        <input type="hidden" th:value="${faculty.id}" id="specialty-faculty-id" name="specialty-faculty-id"/>
+        <button type="submit">Add Specialty</button>
     </form>
 
 
-<!--    confirmation to delete faculty-->
+    <!--    confirmation to delete specialty-->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -54,13 +51,14 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete the faculty "<span id="del-span-faculty-name"></span>"?
+                    Are you sure you want to delete the specialty "<span id="del-span-specialty-name"></span>"?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <form id="deleteForm" th:action="@{/faculties/delete}" method="post">
-                        <input type="hidden" id="faculty-id" name="faculty-id">
-                        <input type="hidden" id="del-faculty-name" name="del-faculty-name">
+                    <form id="deleteForm" th:action="@{/specialties/delete}" method="post">
+                        <input type="hidden" id="specialty-id" name="specialty-id">
+                        <input type="hidden" id="del-specialty-name" name="del-specialty-name">
+                        <input type="hidden" id="specialty-faculty-abbr" name="specialty-faculty-abbr">
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </div>
@@ -74,13 +72,16 @@
     $(document).ready(function () {
         $('#confirmDeleteModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
-            var facultyId = button.data('faculty-id');
-            var facultyName = button.data('faculty-name');
+            var specialtyId = button.data('specialty-id');
+            var specialtyName = button.data('specialty-name');
+            var specialtyFacultyAbbr = button.data('specialty-faculty-abbr');
+
 
             var modal = $(this);
-            modal.find('#faculty-id').val(facultyId);
-            modal.find('#del-span-faculty-name').text(facultyName);
-            modal.find('#del-faculty-name').val(facultyName);
+            modal.find('#specialty-id').val(specialtyId);
+            modal.find('#del-span-specialty-name').text(specialtyName);
+            modal.find('#del-specialty-name').val(specialtyName);
+            modal.find('#specialty-faculty-abbr').val(specialtyFacultyAbbr);
         });
     });
 </script>
