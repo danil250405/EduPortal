@@ -22,10 +22,13 @@
 
     <p th:text="${infoMessage}">Info message</p>
     <ul>
-        <li  th:each="specialty : ${specialties}">
-            <p th:text="${specialty.name}">Specialty name</p>
+        <li th:each="specialty : ${specialties}">
+            <a th:href="@{/faculties/{facultyAbbr}/{specialtyAbbr}(facultyAbbr=${faculty.abbreviation}, specialtyAbbr=${specialty.abbreviation})}">
+                <p ><span th:text="${specialty.name}"></span> || <span th:text="${specialty.abbreviation}"></span></p>
+            </a>
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
-                    th:data-specialty-id="${specialty.id}" th:data-specialty-name="${specialty.name}" th:data-specialty-faculty-abbr="${specialty.faculty.abbreviation}">
+                    th:data-specialty-id="${specialty.id}" th:data-specialty-name="${specialty.name}"
+                    th:data-specialty-faculty-abbr="${specialty.faculty.abbreviation}">
                 Delete
             </button>
         </li>
@@ -41,7 +44,8 @@
 
 
     <!--    confirmation to delete specialty-->
-    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog"
+         aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
