@@ -103,7 +103,7 @@ public class EducationService {
     public boolean deleteSubject(Long subjectId) {
 
         if (canDeleteSubject(subjectId)) {
-            specialtyRepository.deleteById(subjectId);
+            subjectRepository.deleteById(subjectId);
             return true;
         } else {
             return false;
