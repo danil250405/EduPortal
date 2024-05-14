@@ -28,6 +28,7 @@ public class MainController {
         if (authUser != null) {
             System.out.println("Hello " + authUser.getEmail());
         }
+        else System.out.println("You not auth user");
         return "main-page";
     }
 }
