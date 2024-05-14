@@ -11,10 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
@@ -72,22 +69,32 @@ public class AuthController {
         // if everything is good we are make register user
         registrationService.register(appUser);
 
-        return "redirect:/main";
+        return "confirm-email-page";
     }
 
     @GetMapping(path = "/registration/confirm")
-    public String confirm(@RequestParam("token") String token, HttpServletRequest request) throws InterruptedException {
+    public String confirm(@RequestParam("token") String token) throws InterruptedException {
         System.out.println("in confirm getMapping");
         ConfirmationToken confirmationToken = registrationService.confirmToken(token);
 
         if (confirmationToken != null) {
             System.out.println("in conf gM with confirmed token");
-            registrationService.authWithHttpServletRequestAndToken(request, confirmationToken);
+
+            return "redirect:/login?tokensuccess=true";
         }
-        else System.out.println("in conf gM with NOT! confirmed token");
-        return "redirect:/main";
+        else{
+            System.out.println("in conf gM with NOT! confirmed token");
+            return "redirect:/login?tokensuccess=false";
+        }
+//        return "redirect:/main";
     }
     private LocalDateTime getCurrentDateTime() {
         return LocalDateTime.now();
+    }
+    @ExceptionHandler(IllegalStateException.class)
+    public String handleIllegalStateException(IllegalStateException ex, Model model) {
+        // Обработка исключения
+        model.addAttribute("errorMessage", ex.getMessage());
+        return "error-page"; // Возвращаем имя шаблона для отображения страницы с ошибкой
     }
 }

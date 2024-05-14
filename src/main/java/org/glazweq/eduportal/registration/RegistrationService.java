@@ -10,6 +10,9 @@ import org.glazweq.eduportal.registration.token.ConfirmationToken;
 import org.glazweq.eduportal.registration.token.ConfirmationTokenRepository;
 import org.glazweq.eduportal.registration.token.ConfirmationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
@@ -56,29 +59,35 @@ public class RegistrationService {
         appUserService.enableAppUser(
                 confirmationToken.getAppUser().getEmail());
         System.out.println("token is confirmed");
-
+//        SecurityContextHolder.clearContext();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(confirmationToken.getAppUser(), null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         return confirmationToken;
     }
 
 
 
-    public void authWithHttpServletRequestAndToken(HttpServletRequest request, ConfirmationToken confirmationToken) {
-        UserDetails appUser = appUserService.loadUserByUsername(confirmationToken.getAppUser().getUsername());
-//        userDetailsManager.updateUser(appUser);
-        String username = appUser.getUsername();
-        String password = appUser.getPassword();
-        System.out.println("User is " + appUser.getUsername());
-        if (appUser.isEnabled()) System.out.println("he is turn on");
-        else System.out.println("he is torn off");
-        System.out.println("in authWithHttpServletRequestAndToken");
-        try {
-            request.login(username, password);
-            System.out.println("in good way authWithHttpServletRequestAndToken");
-        } catch (ServletException e) {
-            System.out.println("in bad way authWithHttpServletRequestAndToken");
-            LOGGER.error("Error while login ", e);
-        }
-    }
+//    public void authWithHttpServletRequestAndToken(HttpServletRequest request, ConfirmationToken confirmationToken) {
+//
+//        UserDetails appUser = appUserService.loadUserByUsername(confirmationToken.getAppUser().getUsername());
+//        if (!appUser.isEnabled()) {
+//            appUserService.enableAppUser(appUser.getUsername());
+//        }
+////        userDetailsManager.updateUser(appUser);
+//        String username = appUser.getUsername();
+//        String password = appUser.getPassword();
+//        System.out.println("User is " + appUser.getUsername());
+//        if (appUser.isEnabled()) System.out.println("he is turn on");
+//        else System.out.println("he is torn off");
+//        System.out.println("in authWithHttpServletRequestAndToken");
+//        try {
+//            request.login(username, password);
+//            System.out.println("in good way authWithHttpServletRequestAndToken");
+//        } catch (ServletException e) {
+//            System.out.println("in bad way authWithHttpServletRequestAndToken");
+//            LOGGER.error("Error while login ", e);
+//        }
+//    }
 
     private String buildEmail(String name, String link) {
         return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +
