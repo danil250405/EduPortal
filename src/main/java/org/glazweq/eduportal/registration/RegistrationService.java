@@ -1,27 +1,19 @@
 package org.glazweq.eduportal.registration;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.glazweq.eduportal.appUser.AppUser;
 import org.glazweq.eduportal.appUser.AppUserService;
-import org.glazweq.eduportal.email.EmailSender;
+import org.glazweq.eduportal.registration.email.EmailSender;
 import org.glazweq.eduportal.registration.token.ConfirmationToken;
 import org.glazweq.eduportal.registration.token.ConfirmationTokenRepository;
 import org.glazweq.eduportal.registration.token.ConfirmationTokenService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.concurrent.TimeUnit;
-
-import static org.hibernate.sql.ast.SqlTreeCreationLogger.LOGGER;
 
 @Service
 @AllArgsConstructor
