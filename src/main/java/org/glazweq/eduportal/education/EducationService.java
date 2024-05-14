@@ -110,6 +110,7 @@ public class EducationService {
         }
 
 
+
 //        if (canDeleteSpecialty(specialtyId)) {
 //            specialtyRepository.deleteById(specialtyId);
 //            return true;
