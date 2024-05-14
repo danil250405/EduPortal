@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -38,13 +39,12 @@ public class EducationController {
     }
     @PostMapping("/faculties/delete")
     public String deleteFaculty(@ModelAttribute("faculty-id") Long id, Model model,
-                                @ModelAttribute("del-faculty-name") String facultyName){
-        if (educationService.deleteFaculty(id)){
-            model.addAttribute("infoMessage", "faculty " + facultyName +" is delete successful");
-        }
-        else  model.addAttribute("infoMessage", "you can't delete " + facultyName + " faculty");
-        List<Faculty> faculties = educationService.getAllFaculties();
-        model.addAttribute("faculties", faculties);
-        return "faculties-page";
+                                @ModelAttribute("del-faculty-name") String facultyName,
+                                RedirectAttributes redirectAttributes){
+        boolean isDeleted = educationService.deleteFaculty(id);
+        System.out.println("fac name "+ facultyName);
+        String infoMessage = isDeleted ? "Faculty is " + facultyName + " deleted successfully" : "You can't delete " + facultyName;
+        redirectAttributes.addFlashAttribute("infoMessage", infoMessage);
+        return "redirect:/faculties";
     }
 }

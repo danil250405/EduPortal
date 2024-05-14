@@ -37,7 +37,7 @@
     </form>
 
 
-
+<!--    confirmation to delete faculty-->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -48,12 +48,13 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete the faculty "<span id="del-faculty-name"></span>"?
+                    Are you sure you want to delete the faculty "<span id="del-span-faculty-name"></span>"?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <form id="deleteForm" th:action="@{/faculties/delete}" method="post">
                         <input type="hidden" id="faculty-id" name="faculty-id">
+                        <input type="hidden" id="del-faculty-name" name="del-faculty-name">
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </div>
@@ -72,7 +73,8 @@
 
             var modal = $(this);
             modal.find('#faculty-id').val(facultyId);
-            modal.find('#del-faculty-name').text(facultyName);
+            modal.find('#del-span-faculty-name').text(facultyName);
+            modal.find('#del-faculty-name').val(facultyName);
         });
     });
 </script>
