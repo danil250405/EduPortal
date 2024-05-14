@@ -25,7 +25,7 @@ public class EducationController {
         return "faculties-page";
     }
 
-
+//TODO: check identity of abbreviation!!!
     @PostMapping("/faculties/add")
     public String addFaculty(@ModelAttribute("faculty-name") String name,
                              @ModelAttribute("faculty-abbreviation") String abbreviation) {
@@ -43,7 +43,7 @@ public class EducationController {
                                 RedirectAttributes redirectAttributes) {
         boolean isDeleted = educationService.deleteFaculty(id);
         System.out.println("fac name " + facultyName);
-        String infoMessage = isDeleted ? "Faculty is " + facultyName + " deleted successfully" : "You can't delete " + facultyName;
+        String infoMessage = isDeleted ? facultyName + " deleted successfully" : "You can't delete " + facultyName;
         redirectAttributes.addFlashAttribute("infoMessage", infoMessage);
         return "redirect:/faculties";
     }

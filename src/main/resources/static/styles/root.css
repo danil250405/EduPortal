@@ -1,0 +1,21 @@
+ul{
+    list-style: none;
+}
+p, ul, li{
+    margin: 0;
+    padding: 0;
+}
+a{
+    text-decoration: none; /* Убирает подчеркивание */
+    color: inherit; /* Наследует цвет от родительского элемента */
+
+}
+:root{
+    --main-bg-color:#494949;
+    --second-color:#272727;
+    --dark-accent-color:#0c0b16;
+    --light-accent-color:#4760ff;
+}
+body{
+    background-color: var(--main-bg-color);
+}
