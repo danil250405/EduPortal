@@ -9,7 +9,8 @@
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
+    <link rel="stylesheet" href="../static/styles/root.css">
+    <link rel="stylesheet" href="../static/styles/education-style.css">
 </head>
 <body>
 
@@ -19,32 +20,33 @@
 
 
 <main>
-
-    <p th:text="${infoMessage}">Info message</p>
-    <ul>
-        <li  th:each="faculty : ${faculties}">
-            <a th:href="@{/faculties/{facultyAbbreviation}(facultyAbbreviation=${faculty.abbreviation})}">
-
-            <p th:text="${faculty.name}">Faculty name</p>
-               <span th:text="${faculty.abbreviation}"></span>
-           </a>
-            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
-                    th:data-faculty-id="${faculty.id}" th:data-faculty-name="${faculty.name}">
-                Delete
-            </button>
-        </li>
-    </ul>
-    <form th:action="@{/faculties/add}" method="post">
-        <label>Faculty name:</label>
-        <input required type="text" id="faculty-name" name="faculty-name"/>
-        <label>Faculty abbreviation:</label>
-        <input required type="text" id="faculty-abbreviation" name="faculty-abbreviation"/>
-        <button type="submit">Add Faculty</button>
-    </form>
-
-
-<!--    confirmation to delete faculty-->
-    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="wrap-box">
+        <p class="info-msg" th:text="${infoMessage}">Info message</p>
+        <ul class="education-list">
+            <li class="education-item" th:each="faculty : ${faculties}">
+                <a class="object-link"
+                   th:href="@{/faculties/{facultyAbbreviation}(facultyAbbreviation=${faculty.abbreviation})}">
+                    <span th:text="${faculty.abbreviation}">Faculty abbreviation</span>
+                    <span> - </span>
+                    <span th:text="${faculty.name}">Faculty name</span>
+                </a>
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
+                        th:data-faculty-id="${faculty.id}" th:data-faculty-name="${faculty.name}">
+                    Delete
+                </button>
+            </li>
+        </ul>
+        <form th:action="@{/faculties/add}" method="post">
+            <label>Faculty name:</label>
+            <input required type="text" id="faculty-name" name="faculty-name"/>
+            <label>Faculty abbreviation:</label>
+            <input required type="text" id="faculty-abbreviation" name="faculty-abbreviation"/>
+            <button type="submit">Add Faculty</button>
+        </form>
+    </div>
+    <!--    confirmation to delete faculty-->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog"
+         aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -83,5 +85,7 @@
             modal.find('#del-faculty-name').val(facultyName);
         });
     });
+
+
 </script>
 </html>

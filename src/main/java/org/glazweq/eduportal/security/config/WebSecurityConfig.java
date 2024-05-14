@@ -73,7 +73,7 @@ public class WebSecurityConfig {
                                 .loginPage("/login")
                                 .loginProcessingUrl("/login")
 
-                                .defaultSuccessUrl("/main")
+                                .defaultSuccessUrl("/faculties")
                                 .permitAll()
 
                 ).logout(
