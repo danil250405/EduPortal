@@ -169,28 +169,14 @@
 
 
     document.addEventListener('DOMContentLoaded', function () {
-        const compulsoryHeaders = document.querySelectorAll('.compulsory-header');
-        const compulsoryElectiveHeaders = document.querySelectorAll('.compulsory-elective-header');
-        const electiveHeaders = document.querySelectorAll('.elective-header');
+        const subjectBodies = document.querySelectorAll('.subject-body');
 
-        compulsoryHeaders.forEach(function (header) {
-            const compulsoryList = header.nextElementSibling;
-            if (compulsoryList.children.length === 0) {
-                header.style.display = 'none';
-            }
-        });
+        subjectBodies.forEach(function (body) {
+            const header = body.querySelector('h3');
+            const list = header.nextElementSibling;
 
-        compulsoryElectiveHeaders.forEach(function (header) {
-            const compulsoryElectiveList = header.nextElementSibling;
-            if (compulsoryElectiveList.children.length === 0) {
-                header.style.display = 'none';
-            }
-        });
-
-        electiveHeaders.forEach(function (header) {
-            const electiveList = header.nextElementSibling;
-            if (electiveList.children.length === 0) {
-                header.style.display = 'none';
+            if (list.children.length === 0) {
+                body.style.display = 'none';
             }
         });
     });
