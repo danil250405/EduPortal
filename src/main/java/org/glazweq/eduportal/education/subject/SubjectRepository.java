@@ -1,7 +1,6 @@
-package org.glazweq.eduportal.education.repository;
+package org.glazweq.eduportal.education.subject;
 
-import org.glazweq.eduportal.education.entity.Specialty;
-import org.glazweq.eduportal.education.entity.Subject;
+import org.glazweq.eduportal.education.specialty.Specialty;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

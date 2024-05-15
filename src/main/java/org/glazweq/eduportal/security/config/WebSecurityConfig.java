@@ -50,20 +50,22 @@ public class WebSecurityConfig {
                         authorize
                                 .requestMatchers("/").permitAll()
                                 .requestMatchers("/login").permitAll()
-                                .requestMatchers("/main").permitAll()
+                                .requestMatchers("/main/1/2/3").permitAll()
                                 .requestMatchers("/registration").permitAll()
                                 .requestMatchers("/registration/save").permitAll()
                                 .requestMatchers("/registration/confirm").permitAll()
 
                                 .requestMatchers("/faculties").permitAll()
                                 .requestMatchers("/faculties/{facultyAbbreviation}").permitAll()
-                                .requestMatchers("/faculties/{facultyAbbreviation}/{specialtyAbbreviation}").permitAll()
+                                .requestMatchers("/faculties/{facultyAbbr}/{specialtyAbbr}").permitAll()
 
 //                                TODO: permit only admins
                                 .requestMatchers("/faculties/add").permitAll()
                                 .requestMatchers("/faculties/delete").permitAll()
+
                                 .requestMatchers("/specialties/add").permitAll()
                                 .requestMatchers("/specialties/delete").permitAll()
+
                                 .requestMatchers("/subject/add").permitAll()
                                 .requestMatchers("/subject/delete").permitAll()
 

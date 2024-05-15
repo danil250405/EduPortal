@@ -21,7 +21,7 @@
 
 <main>
     <div class="container wrap-box">
-        <p th:text="${infoMessage}">Info message</p>
+        <p class="info-msg" th:text="${infoMessage}">Info message</p>
         <ul class="education-list">
             <li class="education-item" th:each="specialty : ${specialties}">
                 <a class="object-link" th:href="@{/faculties/{facultyAbbr}/{specialtyAbbr}(facultyAbbr=${faculty.abbreviation}, specialtyAbbr=${specialty.abbreviation})}">

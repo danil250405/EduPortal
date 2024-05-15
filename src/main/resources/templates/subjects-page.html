@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Specialty</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/static/styles/root.css">
+    <link rel="stylesheet" href="/static/styles/education-style.css">
+</head>
+<body>
+
+
+<!--import header-->
+<div th:replace="~{fragments/header.html :: header}"></div>
+
+
+<main>
+    <div class="container wrap-box">
+        <p class="info-msg" th:text="${infoMessage}">Info message</p>
+        <ul>
+            <li th:each="semester : ${semesters}">
+                <h2 th:text="${semester}"></h2>
+
+                <h3 class="compulsory-header">Compulsory</h3>
+                <ul class="compulsory-list">
+                    <li th:each="subject : ${compulsorySubjects}" th:if="${subject.semester == semester}">
+                        <a href="#">
+                            <span th:text="${subject.abbreviation}">subject abbreviation</span>
+                            <span> - </span>
+                            <span th:text="${subject.name}">subject name</span>
+                        </a>
+                        <button type="button" class="btn btn-danger" data-toggle="modal"
+                                data-target="#confirmDeleteModal"
+                                th:data-subject-id="${subject.id}" th:data-subject-name="${subject.name}"
+                                th:data-subject-specialty-id="${subject.specialty.id}">
+                            Delete
+                        </button>
+                    </li>
+                </ul>
+
+
+                <h3 class="compulsory-elective-header">Compulsory elective</h3>
+                <ul class="compulsory-elective-list">
+                    <li th:each="subject : ${compulsoryElectiveSubjects}" th:if="${subject.semester == semester}">
+                        <a href="#">
+                            <span th:text="${subject.abbreviation}">subject abbreviation</span>
+                            <span> - </span>
+                            <span th:text="${subject.name}">subject name</span>
+                        </a>
+                        <button type="button" class="btn btn-danger" data-toggle="modal"
+                                data-target="#confirmDeleteModal"
+                                th:data-subject-id="${subject.id}" th:data-subject-name="${subject.name}"
+                                th:data-subject-specialty-id="${subject.specialty.id}">
+                            Delete
+                        </button>
+                    </li>
+                </ul>
+
+                <h3 class="elective-header">Elective</h3>
+                <ul class="elective-list">
+                    <li th:each="subject : ${electiveSubjects}" th:if="${subject.semester == semester}">
+                        <a href="#">
+                            <span th:text="${subject.abbreviation}">subject abbreviation</span>
+                            <span> - </span>
+                            <span th:text="${subject.name}">subject name</span>
+                        </a>
+                        <button type="button" class="btn btn-danger" data-toggle="modal"
+                                data-target="#confirmDeleteModal"
+                                th:data-subject-id="${subject.id}" th:data-subject-name="${subject.name}"
+                                th:data-subject-specialty-id="${subject.specialty.id}">
+                            Delete
+                        </button>
+                    </li>
+                </ul>
+
+            </li>
+        </ul>
+        <form class="edu-form" th:action="@{/subject/add}" method="post">
+            <div class="form-item">
+                <label>subject name:</label>
+                <input type="text" id="subject-name" name="subject-name"/>
+            </div>
+            <div class="form-item">
+                <label>subject abbreviation:</label>
+                <input type="text" id="subject-abbreviation" name="subject-abbreviation"/>
+            </div>
+            <div class="form-item">
+                <label>subject semester:</label>
+                <select id="subject-semester" name="subject-semester">
+                    <option>Semester 1</option>
+                    <option>Semester 2</option>
+                    <option>Semester 3</option>
+                    <option>Semester 4</option>
+                    <option>Semester 5</option>
+                </select>
+            </div>
+            <div class="form-item">
+                <label>subject type:</label>
+                <select id="subject-type" name="subject-type">
+                    <option>Compulsory</option>
+                    <option>Compulsory elective</option>
+                    <option>Elective</option>
+                </select>
+            </div>
+            <input type="hidden" th:value="${specialty.id}" id="subject-specialty-id" name="subject-specialty-id"/>
+            <button type="submit">Add subject</button>
+        </form>
+
+    </div>
+    <!--    confirmation to delete subject-->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog"
+         aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete the subject "<span id="del-span-subject-name"></span>"?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <form id="deleteForm" th:action="@{/subject/delete}" method="post">
+                        <input type="hidden" id="subject-id" name="subject-id">
+                        <input type="hidden" id="del-subject-name" name="del-subject-name">
+                        <input type="hidden" id="del-subject-specialty-id" name="del-subject-specialty-id">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+<script>
+<!--    TODO: put this in .js file -->
+    $(document).ready(function () {
+        $('#confirmDeleteModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var subjectId = button.data('subject-id');
+            var subjectName = button.data('subject-name');
+            var subjectSpecialtyId = button.data('subject-specialty-id');
+
+
+            var modal = $(this);
+            modal.find('#subject-id').val(subjectId);
+            modal.find('#del-span-subject-name').text(subjectName);
+            modal.find('#del-subject-name').val(subjectName);
+            modal.find('#del-subject-specialty-id').val(subjectSpecialtyId);
+        });
+    });
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const compulsoryHeaders = document.querySelectorAll('.compulsory-header');
+        const compulsoryElectiveHeaders = document.querySelectorAll('.compulsory-elective-header');
+        const electiveHeaders = document.querySelectorAll('.elective-header');
+
+        compulsoryHeaders.forEach(function(header) {
+            const compulsoryList = header.nextElementSibling;
+            if (compulsoryList.children.length === 0) {
+                header.style.display = 'none';
+            }
+        });
+
+        compulsoryElectiveHeaders.forEach(function(header) {
+            const compulsoryElectiveList = header.nextElementSibling;
+            if (compulsoryElectiveList.children.length === 0) {
+                header.style.display = 'none';
+            }
+        });
+
+        electiveHeaders.forEach(function(header) {
+            const electiveList = header.nextElementSibling;
+            if (electiveList.children.length === 0) {
+                header.style.display = 'none';
+            }
+        });
+    });
+</script>
+</html>
