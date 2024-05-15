@@ -79,9 +79,41 @@
 
 
 
-.semester-list{
+.semester-item{
     border-bottom: white 1px solid;
+}
+.semester-item h3{
+    color: white;
+    font-size: 24px;
 }
 .semester-name{
     color: white;
+}
+.types-wrap{
+    display: flex;
+
+}
+.type-wrap:first-child{
+    margin-right: 30px;
+
+}
+.subject-body{
+    background-color: #272727;
+    padding: 10px;
+    border-radius: 15px;
+}
+.type-wrap{
+    width: calc(50% - 35px);
+
+}
+.types-wrap li{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.type-wrap ul li:not(:last-child){
+    margin-bottom: 10px;
+}
+.type-wrap{
+
 }

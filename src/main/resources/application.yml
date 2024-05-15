@@ -23,6 +23,5 @@ spring:
           auth: true
           starttls:
             enable: true
-
 server:
   port: ${PORT:3000}

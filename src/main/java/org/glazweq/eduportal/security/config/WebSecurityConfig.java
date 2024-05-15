@@ -10,16 +10,18 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
-public class WebSecurityConfig {
+public class WebSecurityConfig  {
 
     private final AppUserService appUserService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -44,13 +46,15 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http
+        http.csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) ->
 
                         authorize
+
                                 .requestMatchers("/").permitAll()
                                 .requestMatchers("/login").permitAll()
-                                .requestMatchers("/main/1/2/3").permitAll()
+
                                 .requestMatchers("/registration").permitAll()
                                 .requestMatchers("/registration/save").permitAll()
                                 .requestMatchers("/registration/confirm").permitAll()
