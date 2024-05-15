@@ -76,3 +76,12 @@
 .edu-form button{
     width: fit-content;
 }
+
+
+
+.semester-list{
+    border-bottom: white 1px solid;
+}
+.semester-name{
+    color: white;
+}

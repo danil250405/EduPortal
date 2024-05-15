@@ -1,8 +1,9 @@
-package org.glazweq.eduportal.education.entity;
+package org.glazweq.eduportal.education.subject;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.glazweq.eduportal.education.specialty.Specialty;
 
 @Entity
 @Getter
