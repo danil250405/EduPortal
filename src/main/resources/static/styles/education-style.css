@@ -7,13 +7,16 @@
 }
 
 .object-link {
-    width: 100%;
-    padding: 10px;
+    background-color: transparent;
+    padding: 5px 15px;
     color: white;
+    transition: background-color 0.5s;
+    border-radius: 10px;
 }
 
 .object-link:hover {
-    background-color: var(--second-color);
+    background-color: var(--light-accent-color);
+    transition: background-color 0.5s;
 }
 
 .education-item {
@@ -79,9 +82,6 @@
 
 
 
-.semester-item{
-    border-bottom: white 1px solid;
-}
 .semester-item h3{
     color: white;
     font-size: 24px;
@@ -97,10 +97,25 @@
     margin-right: 30px;
 
 }
+
 .subject-body{
-    background-color: #272727;
+    background-color: var(--light-accent-color);
+    color: #0c0b16;
     padding: 10px;
     border-radius: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0px 0px 10px 1px #322c47;
+}
+.subject-body a{
+    border-radius: 10px;
+    padding: 5px 15px;
+    display: block;
+    background-color: transparent;
+    transition: background-color 0.5s;
+}
+.subject-body a:hover{
+    background-color: var(--main-bg-color);
+    transition: background-color 0.5s;
 }
 .type-wrap{
     width: calc(50% - 35px);
@@ -115,5 +130,10 @@
     margin-bottom: 10px;
 }
 .type-wrap{
+
+}
+.btn{
+    border-color: white ;
+    background-color: var(--dark-accent-color);
 
 }
