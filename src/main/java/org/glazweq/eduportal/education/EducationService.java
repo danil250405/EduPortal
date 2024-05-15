@@ -49,6 +49,14 @@ public class EducationService {
     public  Faculty getFacultyById(Long id){
         return facultyRepository.findFacultyById(id);
     }
+    public boolean facultyExistsByName(String name) {
+        return facultyRepository.existsByName(name);
+    }
+
+    public boolean facultyExistsByAbbreviation(String abbreviation) {
+        return facultyRepository.existsByAbbreviation(abbreviation);
+    }
+
 
 //    specialties
     public List<Specialty> getAllSpecialties() {
@@ -79,6 +87,13 @@ public class EducationService {
     }
     public Specialty getSpecialtyById(Long id){
         return specialtyRepository.findSpecialtyById(id);
+    }
+
+    public boolean specialtyAbbreviationExistsOnSameFaculty(String abbreviation, Long facultyId) {
+        return specialtyRepository.existsByAbbreviationAndFacultyId(abbreviation, facultyId);
+    }
+    public boolean specialtyNameExistsOnSameFaculty(String name, Long facultyId) {
+        return specialtyRepository.existsByNameAndFacultyId(name, facultyId);
     }
 
 //    Subjects

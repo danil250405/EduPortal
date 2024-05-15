@@ -9,39 +9,52 @@
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
+    <link rel="stylesheet" href="../static/styles/root.css">
+    <link rel="stylesheet" href="../static/styles/education-style.css">
 </head>
 <body>
 
 
 <!--import header-->
-<!--<div th:replace="~{fragments/headerAuth.html :: header}"></div>-->
+<div th:replace="~{fragments/header.html :: header}"></div>
 
 
 <main>
-
-    <p th:text="${infoMessage}">Info message</p>
-    <ul>
-        <li th:each="specialty : ${specialties}">
-            <a th:href="@{/faculties/{facultyAbbr}/{specialtyAbbr}(facultyAbbr=${faculty.abbreviation}, specialtyAbbr=${specialty.abbreviation})}">
-                <p ><span th:text="${specialty.name}"></span> || <span th:text="${specialty.abbreviation}"></span></p>
-            </a>
-            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
-                    th:data-specialty-id="${specialty.id}" th:data-specialty-name="${specialty.name}"
-                    th:data-specialty-faculty-abbr="${specialty.faculty.abbreviation}">
-                Delete
+    <div class="container wrap-box">
+        <p th:text="${infoMessage}">Info message</p>
+        <ul class="education-list">
+            <li class="education-item" th:each="specialty : ${specialties}">
+                <a class="object-link" th:href="@{/faculties/{facultyAbbr}/{specialtyAbbr}(facultyAbbr=${faculty.abbreviation}, specialtyAbbr=${specialty.abbreviation})}">
+                    <span th:text="${specialty.abbreviation}">Specialty abbreviation</span>
+                    <span> - </span>
+                    <span th:text="${specialty.name}">Specialty name</span>
+                </a>
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
+                        th:data-specialty-id="${specialty.id}" th:data-specialty-name="${specialty.name}"
+                        th:data-specialty-faculty-abbr="${specialty.faculty.abbreviation}">
+                    Delete
+                </button>
+            </li>
+        </ul>
+        <form class="edu-form" th:action="@{/specialties/add}" method="post">
+            <div class="form-item">
+                <label>Specialty name:</label>
+                <input type="text" id="specialty-name" name="specialty-name"/>
+            </div>
+            <div class="form-item">
+                <label>Specialty abbreviation:</label>
+                <input type="text" id="specialty-abbreviation" name="specialty-abbreviation"/>
+            </div>
+            <input type="hidden" th:value="${faculty.id}" id="specialty-faculty-id" name="specialty-faculty-id"/>
+            <button class="main-btn" type="submit">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                Add Specialty
             </button>
-        </li>
-    </ul>
-    <form th:action="@{/specialties/add}" method="post">
-        <label>Specialty name:</label>
-        <input type="text" id="specialty-name" name="specialty-name"/>
-        <label>Specialty abbreviation:</label>
-        <input type="text" id="specialty-abbreviation" name="specialty-abbreviation"/>
-        <input type="hidden" th:value="${faculty.id}" id="specialty-faculty-id" name="specialty-faculty-id"/>
-        <button type="submit">Add Specialty</button>
-    </form>
-
+        </form>
+    </div>
 
     <!--    confirmation to delete specialty-->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog"
