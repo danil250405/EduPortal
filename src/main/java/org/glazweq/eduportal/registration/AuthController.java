@@ -98,3 +98,4 @@ public class AuthController {
         return "error-page"; // Возвращаем имя шаблона для отображения страницы с ошибкой
     }
 }
+
