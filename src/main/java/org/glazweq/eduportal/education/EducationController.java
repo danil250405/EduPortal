@@ -25,10 +25,23 @@ public class EducationController {
         return "faculties-page";
     }
 
-//TODO: check identity of abbreviation!!!
+
     @PostMapping("/faculties/add")
     public String addFaculty(@ModelAttribute("faculty-name") String name,
-                             @ModelAttribute("faculty-abbreviation") String abbreviation) {
+                             @ModelAttribute("faculty-abbreviation") String abbreviation,
+                             RedirectAttributes redirectAttributes) {
+        // Проверка на существование факультета с таким же названием
+        if (educationService.facultyExistsByName(name)) {
+            redirectAttributes.addFlashAttribute("infoMessage", "Faculty with the same name already exists.");
+
+            return "redirect:/faculties";
+        }
+
+        // Проверка на существование факультета с такой же аббревиатурой
+        if (educationService.facultyExistsByAbbreviation(abbreviation)) {
+            redirectAttributes.addFlashAttribute("infoMessage", "Faculty with the same abbreviation already exists.");
+            return "redirect:/faculties";
+        }
         Faculty faculty = new Faculty();
         faculty.setName(name);
         faculty.setAbbreviation(abbreviation);
@@ -66,8 +79,18 @@ public class EducationController {
     @PostMapping("/specialties/add")
     public String addSpecialty(@ModelAttribute("specialty-name") String name,
                                @ModelAttribute("specialty-abbreviation") String abbreviation,
-                               @ModelAttribute("specialty-faculty-id") Long specialtyFacultyId) {
+                               @ModelAttribute("specialty-faculty-id") Long specialtyFacultyId,
+                               RedirectAttributes redirectAttributes) {
         Faculty faculty = educationService.getFacultyById(specialtyFacultyId);
+        if (educationService.specialtyNameExistsOnSameFaculty(name, specialtyFacultyId)) {
+            redirectAttributes.addFlashAttribute("infoMessage", "Specialty with the same name already exists on this faculty.");
+            return "redirect:/faculties/" + faculty.getAbbreviation();
+        }
+        if (educationService.specialtyAbbreviationExistsOnSameFaculty(abbreviation, specialtyFacultyId)) {
+            redirectAttributes.addFlashAttribute("infoMessage", "Specialty with the same abbreviation already exists on this faculty.");
+            return "redirect:/faculties/" + faculty.getAbbreviation();
+        }
+
         Specialty specialty = new Specialty();
         specialty.setName(name);
         specialty.setAbbreviation(abbreviation);

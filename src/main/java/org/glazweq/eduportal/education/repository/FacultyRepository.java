@@ -8,4 +8,6 @@ import java.util.List;
 public interface FacultyRepository extends JpaRepository<Faculty, Long> {
     Faculty findByAbbreviation(String abbreviation);
     Faculty findFacultyById(Long id);
+    boolean existsByName(String name);
+    boolean existsByAbbreviation(String abbreviation);
 }

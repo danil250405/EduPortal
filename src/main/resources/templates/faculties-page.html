@@ -16,11 +16,11 @@
 
 
 <!--import header-->
-<!--<div th:replace="~{fragments/headerAuth.html :: header}"></div>-->
+<div th:replace="~{fragments/header.html :: header}"></div>
 
 
 <main>
-    <div class="wrap-box">
+    <div class="container wrap-box">
         <p class="info-msg" th:text="${infoMessage}">Info message</p>
         <ul class="education-list">
             <li class="education-item" th:each="faculty : ${faculties}">
@@ -36,12 +36,22 @@
                 </button>
             </li>
         </ul>
-        <form th:action="@{/faculties/add}" method="post">
-            <label>Faculty name:</label>
-            <input required type="text" id="faculty-name" name="faculty-name"/>
-            <label>Faculty abbreviation:</label>
-            <input required type="text" id="faculty-abbreviation" name="faculty-abbreviation"/>
-            <button type="submit">Add Faculty</button>
+        <form class="edu-form" th:action="@{/faculties/add}" method="post">
+            <div class="form-item">
+                <label>Faculty name: </label>
+                <input required type="text" id="faculty-name" name="faculty-name"/>
+            </div>
+            <div class="form-item">
+                <label>Faculty abbreviation: </label>
+                <input required type="text" id="faculty-abbreviation" name="faculty-abbreviation"/>
+            </div>
+            <button class="main-btn" type="submit">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                Add Faculty
+            </button>
         </form>
     </div>
     <!--    confirmation to delete faculty-->
