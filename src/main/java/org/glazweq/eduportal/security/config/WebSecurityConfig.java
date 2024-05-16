@@ -73,6 +73,8 @@ public class WebSecurityConfig  {
                                 .requestMatchers("/subject/add").permitAll()
                                 .requestMatchers("/subject/delete").permitAll()
 
+                                .requestMatchers("/file/**").permitAll()
+
                 ).formLogin(
                         form -> form
 
