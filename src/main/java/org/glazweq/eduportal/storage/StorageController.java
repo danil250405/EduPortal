@@ -3,6 +3,7 @@ package org.glazweq.eduportal.storage;
 
 
 import lombok.AllArgsConstructor;
+import org.glazweq.eduportal.education.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
@@ -21,8 +22,9 @@ public class StorageController {
     private StorageService service;
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam(value = "file") MultipartFile file) {
-        return new ResponseEntity<>(service.uploadFile(file), HttpStatus.OK);
+    public ResponseEntity<String> uploadFile(@RequestParam(value = "file") MultipartFile file,
+                                             @RequestParam(value = "subject") Subject subject) {
+        return new ResponseEntity<>(service.uploadFile(file, subject), HttpStatus.OK);
     }
 
     @GetMapping("/download/{fileName}")

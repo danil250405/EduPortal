@@ -4,11 +4,14 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.glazweq.eduportal.education.specialty.Specialty;
+import org.glazweq.eduportal.storage.file_metadata.FileMetadata;
 
-@Entity
+import java.util.List;
+
+
 @Getter
 @Setter
-
+@Entity
 public class Subject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,5 +27,7 @@ public class Subject {
     @ManyToOne
     @JoinColumn(name = "specialty_id")
     private Specialty specialty;
+    @OneToMany(mappedBy = "subject")
+    private List<FileMetadata> filesMetadata;
 
 }
