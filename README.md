@@ -33,7 +33,7 @@ Clone the repository:
 
 
 ```bash
-git clone https://github.com/username/educational-platform.git
+git clone https://github.com/danil250405/EduPortal.git
 ```
 - Configure the database connection in application.properties
 - Build the project:
