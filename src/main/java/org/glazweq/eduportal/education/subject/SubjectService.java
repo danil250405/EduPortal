@@ -79,4 +79,10 @@ public class SubjectService {
         }
         return 0; // Или другое значение по умолчанию
     }
+    public Subject getSubjectBySubjectAbbrAndSpecialtyAbbr(String subAbbr, String specAbbr){
+        return subjectRepository.getSubjectByAbbreviationAndSpecialtyAbbreviation(subAbbr,specAbbr);
+    }
+    public Subject getSubjectById(Long id){
+        return subjectRepository.getSubjectById(id);
+    }
 }

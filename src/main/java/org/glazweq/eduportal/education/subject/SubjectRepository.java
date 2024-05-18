@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
     List<Subject> findAllBySpecialty(Specialty specialty);
+    Subject getSubjectByAbbreviationAndSpecialtyAbbreviation(String subAbbr,String specAbbr);
+    Subject getSubjectById(Long id);
 }

@@ -89,4 +89,5 @@ public class SubjectController {
         redirectAttributes.addFlashAttribute("infoMessage", infoMessage);
         return "redirect:/faculties/" + specialty.getFaculty().getAbbreviation() + "/" + specialty.getAbbreviation();
     }
+
 }

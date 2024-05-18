@@ -1,6 +1,8 @@
 package org.glazweq.eduportal.storage;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
@@ -29,13 +31,19 @@ public class StorageService {
     private AmazonS3 s3Client;
     private final FileMetadataService fileMetadataService;
 
-    public String uploadFile(MultipartFile file, Subject subject) {
-        File fileObject = convertMultiPartFileToFile(file);
-        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-        saveOriginalFileName(file.getOriginalFilename(), fileName, subject);
-        s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObject));
-        fileObject.delete();
-        return "File uploaded: " + fileName;
+    public void uploadFile(MultipartFile file, Subject subject) {
+        log.debug("uploading file to amazon service: fileName {}, subject name: {}", file.getOriginalFilename(), subject.getName());
+       try {
+           File fileObject = convertMultiPartFileToFile(file);
+           String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+           saveOriginalFileName(file.getOriginalFilename(), fileName, subject);
+           s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObject));
+           fileObject.delete();
+           log.info("File upload successfully: {}", file.getOriginalFilename());
+       }catch (Exception e){
+           log.error("Error uploading file in AWS service: fileName {}", file.getOriginalFilename(), e);
+       }
+
     }
 
     private void saveOriginalFileName(String originalFileName, String s3FileName, Subject subject) {
@@ -59,9 +67,20 @@ public class StorageService {
     }
 
     public  byte[] downloadFile(String fileName) throws IOException {
-      S3Object s3Object = s3Client.getObject(bucketName, fileName);
-        S3ObjectInputStream inputStream = s3Object.getObjectContent();
-        return IOUtils.toByteArray(inputStream);
+        try {
+            S3Object s3Object = s3Client.getObject(bucketName, fileName);
+            S3ObjectInputStream inputStream = s3Object.getObjectContent();
+            return IOUtils.toByteArray(inputStream);
+        } catch (AmazonS3Exception e) {
+            log.error("Error getting file from S3: {}", fileName, e);
+            throw new RuntimeException("Error getting file from S3: " + fileName, e);
+        } catch (SdkClientException e) {
+            log.error("AWS SDK client error while getting file: {}", fileName, e);
+            throw new RuntimeException("AWS SDK client error while getting file: " + fileName, e);
+        } catch (IOException e) {
+            log.error("Error reading file content: {}", fileName, e);
+            throw new RuntimeException("Error reading file content: " + fileName, e);
+        }
     }
 
     private File convertMultiPartFileToFile(MultipartFile file) {
@@ -74,7 +93,17 @@ public class StorageService {
         return convertedFile;
     }
     public String deleteFile(String fileName){
-        s3Client.deleteObject(bucketName, fileName);
+        try {
+            s3Client.deleteObject(bucketName, fileName);
+            log.info("File deleted successfully: {}", fileName);
+        } catch (AmazonS3Exception e) {
+            log.error("Error deleting file from S3: {}", fileName, e);
+        } catch (SdkClientException e) {
+            log.error("AWS SDK client error while deleting file: {}", fileName, e);
+        } catch (Exception e) {
+            log.error("Unexpected error while deleting file: {}", fileName, e);
+        }
+
         return fileName + " removed ...";
     }
 }

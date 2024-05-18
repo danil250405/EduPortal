@@ -31,7 +31,10 @@
                             <h3 class="compulsory-header">Compulsory</h3>
                             <ul class="compulsory-list">
                                 <li th:each="subject : ${compulsorySubjects}" th:if="${subject.semester == semester}">
-                                    <a href="#">
+                                    <a  th:href="@{/faculties/{facultyAbbr}/{specialtyAbbr}/{subjectAbbr}
+                                                    (facultyAbbr=${subject.specialty.faculty.abbreviation},
+                                                    specialtyAbbr=${subject.specialty.abbreviation},
+                                                    subjectAbbr=${subject.abbreviation})}">
                                         <span th:text="${subject.abbreviation}">subject abbreviation</span>
                                         <span> - </span>
                                         <span th:text="${subject.name}">subject name</span>

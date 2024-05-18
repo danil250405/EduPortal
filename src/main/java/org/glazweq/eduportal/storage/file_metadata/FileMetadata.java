@@ -1,10 +1,12 @@
 package org.glazweq.eduportal.storage.file_metadata;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import org.glazweq.eduportal.education.specialty.Specialty;
 import org.glazweq.eduportal.education.subject.Subject;
 
 @Entity
+@Getter
 @Table(name = "file_metadata")
 public class FileMetadata {
     @Id

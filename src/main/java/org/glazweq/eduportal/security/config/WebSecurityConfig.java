@@ -58,10 +58,11 @@ public class WebSecurityConfig  {
                                 .requestMatchers("/registration").permitAll()
                                 .requestMatchers("/registration/save").permitAll()
                                 .requestMatchers("/registration/confirm").permitAll()
-
+//                                  TODO: optimize this shit
                                 .requestMatchers("/faculties").permitAll()
                                 .requestMatchers("/faculties/{facultyAbbreviation}").permitAll()
                                 .requestMatchers("/faculties/{facultyAbbr}/{specialtyAbbr}").permitAll()
+                                .requestMatchers("/faculties/{facultyAbbr}/{specialtyAbbr}/{subjectAddr}").permitAll()
 
 //                                TODO: permit only admins
                                 .requestMatchers("/faculties/add").permitAll()

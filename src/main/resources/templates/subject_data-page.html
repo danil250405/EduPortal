@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"
+<html lang="en ru"
       xmlns:th="http://www.thymeleaf.org"
 >
 <head>
@@ -9,8 +9,8 @@
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="../static/styles/root.css">
-    <link rel="stylesheet" href="../static/styles/education-style.css">
+    <link rel="stylesheet" href="/static/styles/root.css">
+    <link rel="stylesheet" href="/static/styles/education-style.css">
 </head>
 <body>
 
@@ -23,37 +23,43 @@
     <div class="container wrap-box">
         <p class="info-msg" th:text="${infoMessage}">Info message</p>
         <ul class="education-list">
-            <li class="education-item" th:each="specialty : ${specialties}">
-                <a class="object-link" th:href="@{/faculties/{facultyAbbr}/{specialtyAbbr}(facultyAbbr=${specialty.faculty.abbreviation}, specialtyAbbr=${specialty.abbreviation})}">
-                    <span th:text="${specialty.abbreviation}">Specialty abbreviation</span>
-                    <span> - </span>
-                    <span th:text="${specialty.name}">Specialty name</span>
+            <li class="education-item" th:each="jpgFile : ${jpgFiles}">
+                <a class="object-link" href="#">
+                    <span th:text="${jpgFile.originalFileName}">File name</span>
+<!--                    <span> - </span>-->
+<!--                    <span th:text="${specialty.name}">Specialty name</span>-->
                 </a>
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
-                        th:data-specialty-id="${specialty.id}" th:data-specialty-name="${specialty.name}"
-                        th:data-specialty-faculty-abbr="${specialty.faculty.abbreviation}">
+                        th:data-specialty-id="${jpgFile.id}" th:data-specialty-name="${jpgFile.originalFileName}">
                     Delete
                 </button>
             </li>
         </ul>
-        <form class="edu-form" th:action="@{/specialties/add}" method="post">
-            <div class="form-item">
-                <label>Specialty name:</label>
-                <input type="text" id="specialty-name" name="specialty-name"/>
-            </div>
-            <div class="form-item">
-                <label>Specialty abbreviation:</label>
-                <input type="text" id="specialty-abbreviation" name="specialty-abbreviation"/>
-            </div>
-            <input type="hidden" th:value="${faculty.id}" id="specialty-faculty-id" name="specialty-faculty-id"/>
-            <button class="main-btn" type="submit">
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                Add Specialty
-            </button>
+<!--        <form method="post" th:action="@{/upload}" enctype="multipart/form-data">-->
+<!--            <div class="form-group">-->
+<!--                <input type="file" name="image" accept="image/*" class="form-control-file">-->
+<!--            </div>-->
+<!--            <button type="submit" class="btn btn-primary">Upload image</button>-->
+<!--        </form>-->
+<!--        <form-->
+<!--                id="uploadForm"-->
+<!--                method="post"-->
+<!--                th:action="@{/file/upload}"-->
+<!--                enctype="multipart/form-data">-->
+<!--            <input id="input-file" type="file" name="file" />-->
+<!--            <input type="hidden" th:value="${subject}" id="subject" name="subject"/>-->
+<!--            <button class="btn btn-sm btn-outline-success float-right" type="submit">-->
+<!--                Upload-->
+<!--            </button>-->
+<!--        </form>-->
+
+        <form method='post' th:action="@{/file/upload}" enctype="multipart/form-data">
+            <input type="hidden" name="MAX_FILE_SIZE" value="5000000">
+            <input type="hidden" th:value="${subject.id}" id="subject-id" name="subject-id"/>
+            <input type='file' name='file' class='file-drop' id='file-drop' multiple required><br>
+            <input type='submit' value='Загрузить'>
         </form>
+        <div class='message-div message-div_hidden' id='message-div'></div>
     </div>
 
     <!--    confirmation to delete specialty-->
@@ -72,10 +78,9 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <form id="deleteForm" th:action="@{/specialties/delete}" method="post">
+                    <form id="deleteForm" th:action="@{/file/delete}" method="post">
                         <input type="hidden" id="specialty-id" name="specialty-id">
                         <input type="hidden" id="del-specialty-name" name="del-specialty-name">
-                        <input type="hidden" id="specialty-faculty-abbr" name="specialty-faculty-abbr">
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </div>
