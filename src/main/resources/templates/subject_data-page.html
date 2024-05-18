@@ -24,39 +24,25 @@
         <p class="info-msg" th:text="${infoMessage}">Info message</p>
         <ul class="education-list">
             <li class="education-item" th:each="jpgFile : ${jpgFiles}">
-                <a class="object-link" href="#">
+                <a class="object-link" th:href="@{/file/download/{fileName}(fileName=${jpgFile.s3FileName})}">
                     <span th:text="${jpgFile.originalFileName}">File name</span>
 <!--                    <span> - </span>-->
 <!--                    <span th:text="${specialty.name}">Specialty name</span>-->
                 </a>
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
-                        th:data-specialty-id="${jpgFile.id}" th:data-specialty-name="${jpgFile.originalFileName}">
+                        th:data-subject-id="${subject.id}" th:data-or-file-name="${jpgFile.originalFileName}"
+                        th:data-s3-file-name="${jpgFile.s3FileName}">
                     Delete
                 </button>
             </li>
         </ul>
-<!--        <form method="post" th:action="@{/upload}" enctype="multipart/form-data">-->
-<!--            <div class="form-group">-->
-<!--                <input type="file" name="image" accept="image/*" class="form-control-file">-->
-<!--            </div>-->
-<!--            <button type="submit" class="btn btn-primary">Upload image</button>-->
-<!--        </form>-->
-<!--        <form-->
-<!--                id="uploadForm"-->
-<!--                method="post"-->
-<!--                th:action="@{/file/upload}"-->
-<!--                enctype="multipart/form-data">-->
-<!--            <input id="input-file" type="file" name="file" />-->
-<!--            <input type="hidden" th:value="${subject}" id="subject" name="subject"/>-->
-<!--            <button class="btn btn-sm btn-outline-success float-right" type="submit">-->
-<!--                Upload-->
-<!--            </button>-->
-<!--        </form>-->
+
 
         <form method='post' th:action="@{/file/upload}" enctype="multipart/form-data">
             <input type="hidden" name="MAX_FILE_SIZE" value="5000000">
             <input type="hidden" th:value="${subject.id}" id="subject-id" name="subject-id"/>
-            <input type='file' name='file' class='file-drop' id='file-drop' multiple required><br>
+            <input type='file' name='file' class='file-drop' id='file-drop' multiple required onchange="checkFileSize(this.files)"><br>
+
             <input type='submit' value='Загрузить'>
         </form>
         <div class='message-div message-div_hidden' id='message-div'></div>
@@ -74,13 +60,13 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete the specialty "<span id="del-span-specialty-name"></span>"?
+                    Are you sure you want to delete the file "<span id="del-or-file-name"></span>"?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <form id="deleteForm" th:action="@{/file/delete}" method="post">
-                        <input type="hidden" id="specialty-id" name="specialty-id">
-                        <input type="hidden" id="del-specialty-name" name="del-specialty-name">
+                        <input type="hidden" id="del-subject-id" name="del-subject-id">
+                        <input type="hidden" id="del-s3-file-name" name="del-s3-file-name">
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </div>
@@ -94,17 +80,37 @@
     $(document).ready(function () {
         $('#confirmDeleteModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
-            var specialtyId = button.data('specialty-id');
-            var specialtyName = button.data('specialty-name');
-            var specialtyFacultyAbbr = button.data('specialty-faculty-abbr');
+            var subjectId = button.data('subject-id');
+            var orFileName = button.data('or-file-name');
+            var s3FileName = button.data('s3-file-name');
+
 
 
             var modal = $(this);
-            modal.find('#specialty-id').val(specialtyId);
-            modal.find('#del-span-specialty-name').text(specialtyName);
-            modal.find('#del-specialty-name').val(specialtyName);
-            modal.find('#specialty-faculty-abbr').val(specialtyFacultyAbbr);
+            modal.find('#del-subject-id').val(subjectId);
+            modal.find('#del-or-file-name').text(orFileName);
+            modal.find('#del-s3-file-name').val(s3FileName);
         });
     });
+
+
+    /*<![CDATA[*/
+    const maxFileSizeBytes = /*[[${@environment.getProperty('spring.servlet.multipart.max-file-size')}]]*/ 5000000;
+
+    function checkFileSize(files) {
+        const messageDivElement = document.getElementById('message-div');
+        messageDivElement.classList.remove('message-div_hidden');
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.size > maxFileSizeBytes) {
+                messageDivElement.textContent = `Файл "${file.name}" превышает максимально допустимый размер (${maxFileSizeBytes / 1024 / 1024} МБ)`;
+                return;
+            }
+        }
+
+        messageDivElement.textContent = 'Все файлы имеют допустимый размер';
+    }
+    /*]]>*/
 </script>
 </html>

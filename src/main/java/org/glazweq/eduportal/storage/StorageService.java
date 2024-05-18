@@ -95,6 +95,7 @@ public class StorageService {
     public String deleteFile(String fileName){
         try {
             s3Client.deleteObject(bucketName, fileName);
+            fileMetadataService.deleteFileByS3Name(fileName);
             log.info("File deleted successfully: {}", fileName);
         } catch (AmazonS3Exception e) {
             log.error("Error deleting file from S3: {}", fileName, e);
