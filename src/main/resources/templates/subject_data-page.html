@@ -26,8 +26,8 @@
             <li class="education-item" th:each="jpgFile : ${jpgFiles}">
                 <a class="object-link" th:href="@{/file/download/{fileName}(fileName=${jpgFile.s3FileName})}">
                     <span th:text="${jpgFile.originalFileName}">File name</span>
-<!--                    <span> - </span>-->
-<!--                    <span th:text="${specialty.name}">Specialty name</span>-->
+                    <!--                    <span> - </span>-->
+                    <!--                    <span th:text="${specialty.name}">Specialty name</span>-->
                 </a>
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
                         th:data-subject-id="${subject.id}" th:data-or-file-name="${jpgFile.originalFileName}"
@@ -36,16 +36,34 @@
                 </button>
             </li>
         </ul>
-
-
-        <form method='post' th:action="@{/file/upload}" enctype="multipart/form-data">
+        <form class="file-upload-form" method='post' th:action="@{/file/upload}" enctype="multipart/form-data">
             <input type="hidden" name="MAX_FILE_SIZE" value="5000000">
             <input type="hidden" th:value="${subject.id}" id="subject-id" name="subject-id"/>
-            <input type='file' name='file' class='file-drop' id='file-drop' multiple required onchange="checkFileSize(this.files)"><br>
-
-            <input type='submit' value='Загрузить'>
+            <label for="file-drop" class="file-upload-label">
+                <div class="file-upload-design">
+                    <svg viewBox="0 0 640 512" height="1em">
+                        <path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"></path>
+                    </svg>
+                    <p class="file-drop-text">Drag and Drop</p>
+                    <p>or</p>
+                    <span class="browse-button">Browse file</span>
+                </div>
+                <input type='file' name='file' class='file-drop' id='file-drop' multiple required onchange="updateFileList(this); checkFileSize(this.files)">
+            </label>
+            <div id="file-list"></div>
+            <input id="submit-button" disabled type='submit' value='Upload'>
         </form>
         <div class='message-div message-div_hidden' id='message-div'></div>
+        <div class='message-div-window message-div_hidden-window' id='message-div-window'></div>
+
+        <!--        <form class="file-upload-form" method='post' th:action="@{/file/upload}" enctype="multipart/form-data">-->
+        <!--            <input type="hidden" name="MAX_FILE_SIZE" value="5000000">-->
+        <!--            <input type="hidden" th:value="${subject.id}" id="subject-id" name="subject-id"/>-->
+        <!--            <input type='file' name='file' class='file-drop' id='file-drop' multiple required onchange="checkFileSize(this.files)"><br>-->
+
+        <!--            <input type='submit' value='Загрузить'>-->
+        <!--        </form>-->
+        <!--        <div class='message-div message-div_hidden' id='message-div'></div>-->
     </div>
 
     <!--    confirmation to delete specialty-->
@@ -76,6 +94,7 @@
 </main>
 
 </body>
+<script src="/static/js/filesUploading.js"></script>
 <script>
     $(document).ready(function () {
         $('#confirmDeleteModal').on('show.bs.modal', function (event) {
@@ -85,32 +104,11 @@
             var s3FileName = button.data('s3-file-name');
 
 
-
             var modal = $(this);
             modal.find('#del-subject-id').val(subjectId);
             modal.find('#del-or-file-name').text(orFileName);
             modal.find('#del-s3-file-name').val(s3FileName);
         });
     });
-
-
-    /*<![CDATA[*/
-    const maxFileSizeBytes = /*[[${@environment.getProperty('spring.servlet.multipart.max-file-size')}]]*/ 5000000;
-
-    function checkFileSize(files) {
-        const messageDivElement = document.getElementById('message-div');
-        messageDivElement.classList.remove('message-div_hidden');
-
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            if (file.size > maxFileSizeBytes) {
-                messageDivElement.textContent = `Файл "${file.name}" превышает максимально допустимый размер (${maxFileSizeBytes / 1024 / 1024} МБ)`;
-                return;
-            }
-        }
-
-        messageDivElement.textContent = 'Все файлы имеют допустимый размер';
-    }
-    /*]]>*/
 </script>
 </html>

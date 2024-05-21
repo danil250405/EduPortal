@@ -1,9 +1,10 @@
-package org.glazweq.eduportal.storage;
-
+package org.glazweq.eduportal.education.subject_data;
 
 
 import lombok.AllArgsConstructor;
 import org.glazweq.eduportal.education.subject.Subject;
+import org.glazweq.eduportal.storage.StorageService;
+import org.glazweq.eduportal.storage.file_metadata.FileMetadataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
@@ -16,10 +17,11 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/file")
 @AllArgsConstructor
-public class StorageController {
+public class DataRestController {
 
 
-    private StorageService service;
+    private StorageService storageService;
+    FileMetadataService fileMetadataService;
 
 //    @PostMapping("/upload")
 //    public ResponseEntity<String> uploadFile(@RequestParam(value = "file") MultipartFile file,
@@ -29,18 +31,14 @@ public class StorageController {
 
     @GetMapping("/download/{fileName}")
     public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName) throws IOException {
-        byte[] data = service.downloadFile(fileName);
+        byte[] data = storageService.downloadFile(fileName);
+        String originalName = fileMetadataService.findFileByS3Name(fileName).getOriginalFileName();
         ByteArrayResource resource = new ByteArrayResource(data);
         return ResponseEntity
                 .ok()
                 .contentLength(data.length)
                 .header("Content-type", "application/octet-stream")
-                .header("Content-disposition", "attachment; filename=\"" + fileName + "\"")
+                .header("Content-disposition", "attachment; filename=\"" + originalName + "\"")
                 .body(resource);
     }
-
-//    @DeleteMapping("/delete/{fileName}")
-//    public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
-//        return new ResponseEntity<>(service.deleteFile(fileName), HttpStatus.OK);
-//    }
 }
