@@ -23,6 +23,7 @@
     <div class="container wrap-box">
         <p class="info-msg" th:text="${infoMessage}">Info message</p>
         <ul class="education-list">
+            <!--jpg files-->
             <li class="education-item" th:each="jpgFile : ${jpgFiles}">
                 <!--send file name and subject id-->
                 <a class="object-link" th:href="@{/file/download/{fileName}/{subjectId}(fileName=${jpgFile.codingFileName}, subjectId=${subject.id})}">
@@ -35,6 +36,38 @@
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
                         th:data-subject-id="${subject.id}" th:data-or-file-name="${jpgFile.originalFileName}"
                         th:data-coding-file-name="${jpgFile.codingFileName}">
+                    Delete
+                </button>
+            </li>
+            <!--mp4 files-->
+            <li class="education-item" th:each="mp4File : ${mp4Files}">
+                <!--send file name and subject id-->
+                <a class="object-link" th:href="@{/file/download/{fileName}/{subjectId}(fileName=${mp4File.codingFileName}, subjectId=${subject.id})}">
+
+
+                    <span th:text="${mp4File.originalFileName}">File name</span>
+                    <!--                    <span> - </span>-->
+                    <!--                    <span th:text="${specialty.name}">Specialty name</span>-->
+                </a>
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
+                        th:data-subject-id="${subject.id}" th:data-or-file-name="${mp4File.originalFileName}"
+                        th:data-coding-file-name="${mp4File.codingFileName}">
+                    Delete
+                </button>
+            </li>
+            <!--pdf files-->
+            <li class="education-item" th:each="pdfFile : ${pdfFiles}">
+                <!--send file name and subject id-->
+                <a class="object-link" th:href="@{/file/download/{fileName}/{subjectId}(fileName=${pdfFile.codingFileName}, subjectId=${subject.id})}">
+
+
+                    <span th:text="${pdfFile.originalFileName}">File name</span>
+                    <!--                    <span> - </span>-->
+                    <!--                    <span th:text="${specialty.name}">Specialty name</span>-->
+                </a>
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
+                        th:data-subject-id="${subject.id}" th:data-or-file-name="${pdfFile.originalFileName}"
+                        th:data-coding-file-name="${pdfFile.codingFileName}">
                     Delete
                 </button>
             </li>

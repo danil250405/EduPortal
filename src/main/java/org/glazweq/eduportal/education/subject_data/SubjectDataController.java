@@ -34,7 +34,11 @@ public class SubjectDataController {
 
         Subject subject = subjectService.getSubjectBySubjectAbbrAndSpecialtyAbbr(subjectAbbr, specialtyAbbr);
         List<FileMetadata> jpgFiles = fileMetadataService.takeFilesBySubjectAndExtension(subject, "jpg");
+        List<FileMetadata> pdfFiles = fileMetadataService.takeFilesBySubjectAndExtension(subject, "pdf");
+        List<FileMetadata> mp4Files = fileMetadataService.takeFilesBySubjectAndExtension(subject, "mp4");
         model.addAttribute("jpgFiles", jpgFiles);
+        model.addAttribute("pdfFiles", pdfFiles);
+        model.addAttribute("mp4Files", mp4Files);
         model.addAttribute("subject", subject);
 
         return "subject_data-page";
