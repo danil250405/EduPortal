@@ -24,14 +24,17 @@
         <p class="info-msg" th:text="${infoMessage}">Info message</p>
         <ul class="education-list">
             <li class="education-item" th:each="jpgFile : ${jpgFiles}">
-                <a class="object-link" th:href="@{/file/download/{fileName}(fileName=${jpgFile.s3FileName})}">
-                    <span th:text="${jpgFile.originalFileName}">File name</span>
+                <!--send file name and subject id-->
+                <a class="object-link" th:href="@{/file/download/{fileName}/{subjectId}(fileName=${jpgFile.codingFileName}, subjectId=${subject.id})}">
+
+
+                <span th:text="${jpgFile.originalFileName}">File name</span>
                     <!--                    <span> - </span>-->
                     <!--                    <span th:text="${specialty.name}">Specialty name</span>-->
                 </a>
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
                         th:data-subject-id="${subject.id}" th:data-or-file-name="${jpgFile.originalFileName}"
-                        th:data-s3-file-name="${jpgFile.s3FileName}">
+                        th:data-coding-file-name="${jpgFile.codingFileName}">
                     Delete
                 </button>
             </li>
@@ -84,7 +87,7 @@
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <form id="deleteForm" th:action="@{/file/delete}" method="post">
                         <input type="hidden" id="del-subject-id" name="del-subject-id">
-                        <input type="hidden" id="del-s3-file-name" name="del-s3-file-name">
+                        <input type="hidden" id="del-coding-file-name" name="del-coding-file-name">
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </div>
@@ -101,13 +104,13 @@
             var button = $(event.relatedTarget);
             var subjectId = button.data('subject-id');
             var orFileName = button.data('or-file-name');
-            var s3FileName = button.data('s3-file-name');
+            var codingFileName = button.data('coding-file-name');
 
 
             var modal = $(this);
             modal.find('#del-subject-id').val(subjectId);
             modal.find('#del-or-file-name').text(orFileName);
-            modal.find('#del-s3-file-name').val(s3FileName);
+            modal.find('#del-coding-file-name').val(codingFileName);
         });
     });
 </script>

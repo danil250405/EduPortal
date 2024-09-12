@@ -54,12 +54,12 @@ public class SubjectDataController {
         return "redirect:/faculties/" + facultyAbbr + "/" + specialtyAbbr + "/" + subjectAbbr;
     }
     @PostMapping("/file/delete")
-    public String deleteFile(@ModelAttribute("del-s3-file-name") String fileName,
+    public String deleteFile(@ModelAttribute("del-coding-file-name") String fileName,
                              @ModelAttribute("del-subject-id") Long subjectId) {
         System.out.println("in delete method");
         Subject subject = subjectService.getSubjectById(subjectId);
 
-        storageService.deleteFile(fileName);
+        storageService.deleteFile(fileName, subject);
         String facultyAbbr = subject.getSpecialty().getFaculty().getAbbreviation();
         String specialtyAbbr = subject.getSpecialty().getAbbreviation();
         String subjectAbbr = subject.getAbbreviation();

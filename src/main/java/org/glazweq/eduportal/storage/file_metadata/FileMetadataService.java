@@ -19,10 +19,10 @@ public class FileMetadataService {
     public List<FileMetadata> takeFilesBySubjectAndExtension(Subject subject, String extension){
         return fileMetadataRepository.getFileMetadataBySubjectAndExtension(subject, extension);
     }
-    public FileMetadata findFileByS3Name(String fileS3Name){
-        return fileMetadataRepository.getFileMetadataByS3FileName(fileS3Name);
+    public FileMetadata findFileByCodingName(String fileCodingName){
+        return fileMetadataRepository.getFileMetadataByCodingFileName(fileCodingName);
     }
-    public void deleteFileByS3Name(String fileS3Name){
-        fileMetadataRepository.delete(findFileByS3Name(fileS3Name));
+    public void deleteFileByName(String fileCodingName){
+        fileMetadataRepository.delete(findFileByCodingName(fileCodingName));
     }
 }

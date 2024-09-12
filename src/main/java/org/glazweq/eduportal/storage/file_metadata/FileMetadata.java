@@ -16,7 +16,7 @@ public class FileMetadata {
     private String originalFileName;
 
     @Column(nullable = false, unique = true)
-    private String s3FileName;
+    private String codingFileName;
 
     @Column(nullable = false)
     private String extension;
@@ -24,9 +24,9 @@ public class FileMetadata {
     @JoinColumn(name = "subject_id")
     private Subject subject;
 
-    public FileMetadata(String originalFileName, String s3FileName, String extension, Subject subject) {
+    public FileMetadata(String originalFileName, String codingFileName, String extension, Subject subject) {
         this.originalFileName = originalFileName;
-        this.s3FileName = s3FileName;
+        this.codingFileName = codingFileName;
         this.extension = extension;
         this.subject = subject;
     }
