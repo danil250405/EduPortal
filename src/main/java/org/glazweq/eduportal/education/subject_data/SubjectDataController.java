@@ -69,22 +69,4 @@ public class SubjectDataController {
         String subjectAbbr = subject.getAbbreviation();
         return "redirect:/faculties/" + facultyAbbr + "/" + specialtyAbbr + "/" + subjectAbbr;
     }
-//    public ResponseEntity<String> uploadFile(@RequestParam(value = "file") MultipartFile file,
-//                                             @RequestParam(value = "subject") Subject subject) {
-//        return new ResponseEntity<>(service.uploadFile(file, subject), HttpStatus.OK);
-//    }
-//@GetMapping("/file/download/subject/{subjectId}/{fileName}")
-//public ResponseEntity<byte[]> downloadFile(@PathVariable("fileName") String fileName,
-//                                           @PathVariable("subjectId") Long subjectId) throws IOException {
-//
-//    Subject subject = subjectService.getSubjectById(subjectId);
-//    byte[] fileContent = storageService.downloadFile(fileName);
-//
-//    HttpHeaders headers = new HttpHeaders();
-//    headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-//    headers.setContentDispositionFormData("attachment", fileName);
-//    headers.setContentLength(fileContent.length);
-//
-//    return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
-//}
 }

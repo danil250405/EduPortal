@@ -26,12 +26,13 @@
             <!--jpg files-->
             <li class="education-item" th:each="jpgFile : ${jpgFiles}">
                 <!--send file name and subject id-->
+                <div>
+                    <a th:href="@{/file/view/{fileName}/{subjectId}(fileName=${jpgFile.codingFileName}, subjectId=${subject.id})}">
+                        <span th:text="${jpgFile.originalFileName}">File name</span>
+                    </a>
+                </div>
                 <a class="object-link" th:href="@{/file/download/{fileName}/{subjectId}(fileName=${jpgFile.codingFileName}, subjectId=${subject.id})}">
-
-
-                <span th:text="${jpgFile.originalFileName}">File name</span>
-                    <!--                    <span> - </span>-->
-                    <!--                    <span th:text="${specialty.name}">Specialty name</span>-->
+                    Download
                 </a>
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
                         th:data-subject-id="${subject.id}" th:data-or-file-name="${jpgFile.originalFileName}"
@@ -41,14 +42,16 @@
             </li>
             <!--mp4 files-->
             <li class="education-item" th:each="mp4File : ${mp4Files}">
-                <!--send file name and subject id-->
+                <div>
+                    <a th:href="@{/file/view/{fileName}/{subjectId}(fileName=${mp4File.codingFileName}, subjectId=${subject.id})}">
+                        <span th:text="${mp4File.originalFileName}">File name</span>
+                    </a>
+                </div>
+                <!-- ссылка для скачивания -->
                 <a class="object-link" th:href="@{/file/download/{fileName}/{subjectId}(fileName=${mp4File.codingFileName}, subjectId=${subject.id})}">
-
-
-                    <span th:text="${mp4File.originalFileName}">File name</span>
-                    <!--                    <span> - </span>-->
-                    <!--                    <span th:text="${specialty.name}">Specialty name</span>-->
+                    Download
                 </a>
+                <!-- кнопка для удаления -->
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
                         th:data-subject-id="${subject.id}" th:data-or-file-name="${mp4File.originalFileName}"
                         th:data-coding-file-name="${mp4File.codingFileName}">
@@ -58,12 +61,14 @@
             <!--pdf files-->
             <li class="education-item" th:each="pdfFile : ${pdfFiles}">
                 <!--send file name and subject id-->
+                <div>
+                    <a th:href="@{/file/view/{fileName}/{subjectId}(fileName=${pdfFile.codingFileName}, subjectId=${subject.id})}">
+                        <span th:text="${pdfFile.originalFileName}">File name</span>
+                    </a>
+                </div>
+
                 <a class="object-link" th:href="@{/file/download/{fileName}/{subjectId}(fileName=${pdfFile.codingFileName}, subjectId=${subject.id})}">
-
-
-                    <span th:text="${pdfFile.originalFileName}">File name</span>
-                    <!--                    <span> - </span>-->
-                    <!--                    <span th:text="${specialty.name}">Specialty name</span>-->
+                    Download
                 </a>
                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
                         th:data-subject-id="${subject.id}" th:data-or-file-name="${pdfFile.originalFileName}"

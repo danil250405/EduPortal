@@ -7,6 +7,7 @@ import org.glazweq.eduportal.storage.file_metadata.FileMetadataService;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.StandardCopyOption;
 import java.io.File;
@@ -68,26 +69,6 @@ public class StorageService {
 
 
 
-//    private final String bucketName = "eduportalstustorage";
-//    @Autowired
-//    private AmazonS3 s3Client;
-
-
-//    public void uploadFile(MultipartFile file, Subject subject) {
-//        log.debug("uploading file to amazon service: fileName {}, subject name: {}", file.getOriginalFilename(), subject.getName());
-//       try {
-//           File fileObject = convertMultiPartFileToFile(file);
-//           String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-//           saveOriginalFileName(file.getOriginalFilename(), fileName, subject);
-//           s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObject));
-//           fileObject.delete();
-//           log.info("File upload successfully: {}", file.getOriginalFilename());
-//       }catch (Exception e){
-//           log.error("Error uploading file in AWS service: fileName {}", file.getOriginalFilename(), e);
-//       }
-//
-//    }
-
     private void saveOriginalFileName(String originalFileName, String s3FileName, Subject subject) {
     String fileExtension = getFileExtension(originalFileName);
         log.debug("Saving file metadata for original file name: {}, S3 file name: {}, extension: {}", originalFileName, s3FileName, fileExtension);
@@ -108,29 +89,10 @@ public class StorageService {
         return fileName.substring(dotIndex + 1);
     }
 
-//    public  byte[] downloadFile(String fileName) throws IOException {
-//        try {
-//            S3Object s3Object = s3Client.getObject(bucketName, fileName);
-//            S3ObjectInputStream inputStream = s3Object.getObjectContent();
-//            return IOUtils.toByteArray(inputStream);
-//        } catch (AmazonS3Exception e) {
-//            log.error("Error getting file from S3: {}", fileName, e);
-//            throw new RuntimeException("Error getting file from S3: " + fileName, e);
-//        } catch (SdkClientException e) {
-//            log.error("AWS SDK client error while getting file: {}", fileName, e);
-//            throw new RuntimeException("AWS SDK client error while getting file: " + fileName, e);
-//        } catch (IOException e) {
-//            log.error("Error reading file content: {}", fileName, e);
-//            throw new RuntimeException("Error reading file content: " + fileName, e);
-//        }
-//    }
+
 public byte[] downloadFile(String fileName, Subject subject) throws IOException {
 
-    Path filePath = Paths.get(uploadDir)
-            .resolve(subject.getSpecialty().getFaculty().getName().replace(" ", "_"))
-            .resolve(subject.getSpecialty().getName().replace(" ", "_"))
-            .resolve(subject.getName().replace(" ", "_"))
-            .resolve(fileName.replace(" ", "_"));
+    Path filePath = getFilePath(fileName, subject);
 
     System.out.println(filePath);
     try {
@@ -147,37 +109,10 @@ public byte[] downloadFile(String fileName, Subject subject) throws IOException 
         throw new IOException("Error reading file: " + fileName, e);
     }
 }
-//    private File convertMultiPartFileToFile(MultipartFile file) {
-//        File convertedFile = new File(file.getOriginalFilename());
-//        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
-//            fos.write(file.getBytes());
-//        } catch (IOException e) {
-//            log.error("Error converting multipartFile to file", e);
-//        }
-//        return convertedFile;
-//    }
-//    public String deleteFile(String fileName){
-//        try {
-//            s3Client.deleteObject(bucketName, fileName);
-//            fileMetadataService.deleteFileByS3Name(fileName);
-//            log.info("File deleted successfully: {}", fileName);
-//        } catch (AmazonS3Exception e) {
-//            log.error("Error deleting file from S3: {}", fileName, e);
-//        } catch (SdkClientException e) {
-//            log.error("AWS SDK client error while deleting file: {}", fileName, e);
-//        } catch (Exception e) {
-//            log.error("Unexpected error while deleting file: {}", fileName, e);
-//        }
-//
-//        return fileName + " removed ...";
-//    }
+
 public void deleteFile(String fileName, Subject subject) {
 
-    Path filePath = Paths.get(uploadDir)
-            .resolve(subject.getSpecialty().getFaculty().getName().replace(" ", "_"))
-            .resolve(subject.getSpecialty().getName().replace(" ", "_"))
-            .resolve(subject.getName().replace(" ", "_"))
-            .resolve(fileName.replace(" ", "_"));
+    Path filePath = getFilePath(fileName, subject);
     System.out.printf(filePath.toString() + "----------");
     try {
         if (Files.deleteIfExists(filePath)) {
@@ -194,4 +129,42 @@ public void deleteFile(String fileName, Subject subject) {
         e.getMessage();
     }
 }
+    public byte[] viewFile(String fileName, Subject subject) throws IOException {
+
+        Path filePath = getFilePath(fileName, subject);
+
+        try {
+            if (!Files.exists(filePath)) {
+                log.error("File not found: {}", fileName);
+                throw new IOException("File not found: " + fileName);
+            }
+
+            byte[] fileContent = Files.readAllBytes(filePath);
+            log.info("File downloaded successfully: {}", fileName);
+            return fileContent;
+        } catch (IOException e) {
+            log.error("Error reading file: {}", fileName, e);
+            throw new IOException("Error reading file: " + fileName, e);
+        }
+    }
+    public Path getFilePath(String fileName, Subject subject) {
+        return Paths.get(uploadDir)
+                .resolve(sanitizePath(subject.getSpecialty().getFaculty().getName()))
+                .resolve(sanitizePath(subject.getSpecialty().getName()))
+                .resolve(sanitizePath(subject.getName()))
+                .resolve(sanitizePath(fileName));
+    }
+
+    public String getMimeType(String fileName) {
+        String extension = StringUtils.getFilenameExtension(fileName);
+        switch (extension.toLowerCase()) {
+            case "png": return "image/png";
+            case "jpg":
+            case "jpeg": return "image/jpeg";
+            case "pdf": return "application/pdf";
+            case "txt": return "text/plain";
+            case "mp4": return "video/mp4";
+            default: return "application/octet-stream";
+        }
+    }
 }

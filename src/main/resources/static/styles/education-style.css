@@ -7,6 +7,8 @@
 }
 
 .object-link {
+    margin-left: auto;
+    margin-right: 35px;
     background-color: transparent;
     padding: 5px 15px;
     color: white;
@@ -26,7 +28,10 @@
     border-bottom: white 1px solid;
     padding: 5px;
 }
-
+.education-item div{
+    color: white;
+    padding: 5px 15px;
+}
 .info-msg:empty {
     display: none;
 }

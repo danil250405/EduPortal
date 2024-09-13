@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import org.glazweq.eduportal.education.specialty.Specialty;
 import org.glazweq.eduportal.education.subject.Subject;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -12,6 +13,7 @@ public class FileMetadata {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     @Column(nullable = false)
     private String originalFileName;
 
@@ -20,9 +22,13 @@ public class FileMetadata {
 
     @Column(nullable = false)
     private String extension;
+
     @ManyToOne
     @JoinColumn(name = "subject_id")
     private Subject subject;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDate uploadDate;
 
     public FileMetadata(String originalFileName, String codingFileName, String extension, Subject subject) {
         this.originalFileName = originalFileName;
@@ -32,5 +38,10 @@ public class FileMetadata {
     }
 
     public FileMetadata() {
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.uploadDate = LocalDate.now();  // Устанавливаем текущую дату при создании записи
     }
 }
