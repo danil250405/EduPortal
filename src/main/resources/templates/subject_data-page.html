@@ -22,61 +22,40 @@
 <main>
     <div class="container wrap-box">
         <p class="info-msg" th:text="${infoMessage}">Info message</p>
-        <ul class="education-list">
-            <!--jpg files-->
-            <li class="education-item" th:each="jpgFile : ${jpgFiles}">
-                <!--send file name and subject id-->
-                <div>
-                    <a th:href="@{/file/view/{fileName}/{subjectId}(fileName=${jpgFile.codingFileName}, subjectId=${subject.id})}">
-                        <span th:text="${jpgFile.originalFileName}">File name</span>
+        <table class="table table-striped table-hover" id="fileTable">
+            <thead>
+            <tr>
+                <th class="sortable" data-sort="0">File Name <span class="sort-icon">&#9650;&#9660;</span></th>
+                <th class="sortable" data-sort="1">Extension <span class="sort-icon">&#9650;&#9660;</span></th>
+                <th class="sortable" data-sort="2">Size <span class="sort-icon">&#9650;&#9660;</span></th>
+                <th class="sortable" data-sort="3">Upload Date <span class="sort-icon">&#9650;&#9660;</span></th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="file : ${files}">
+                <td>
+                    <a th:href="@{/file/view/{fileName}/{subjectId}(fileName=${file.codingFileName}, subjectId=${subject.id})}">
+                        <span th:text="${file.originalFileName}">File name</span>
                     </a>
-                </div>
-                <a class="object-link" th:href="@{/file/download/{fileName}/{subjectId}(fileName=${jpgFile.codingFileName}, subjectId=${subject.id})}">
-                    Download
-                </a>
-                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
-                        th:data-subject-id="${subject.id}" th:data-or-file-name="${jpgFile.originalFileName}"
-                        th:data-coding-file-name="${jpgFile.codingFileName}">
-                    Delete
-                </button>
-            </li>
-            <!--mp4 files-->
-            <li class="education-item" th:each="mp4File : ${mp4Files}">
-                <div>
-                    <a th:href="@{/file/view/{fileName}/{subjectId}(fileName=${mp4File.codingFileName}, subjectId=${subject.id})}">
-                        <span th:text="${mp4File.originalFileName}">File name</span>
+                </td>
+                <td th:text="${file.extension}">Extension</td>
+                <td th:text="${#numbers.formatDecimal(file.fileSize / 1024, 1, 2) + ' KB'}">Size</td>
+                <td th:text="${file.uploadDate}">Upload Date</td>
+                <td>
+                    <a class="btn btn-primary btn-sm" th:href="@{/file/download/{fileName}/{subjectId}(fileName=${file.codingFileName}, subjectId=${subject.id})}">
+                        Download
                     </a>
-                </div>
-                <!-- ссылка для скачивания -->
-                <a class="object-link" th:href="@{/file/download/{fileName}/{subjectId}(fileName=${mp4File.codingFileName}, subjectId=${subject.id})}">
-                    Download
-                </a>
-                <!-- кнопка для удаления -->
-                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
-                        th:data-subject-id="${subject.id}" th:data-or-file-name="${mp4File.originalFileName}"
-                        th:data-coding-file-name="${mp4File.codingFileName}">
-                    Delete
-                </button>
-            </li>
-            <!--pdf files-->
-            <li class="education-item" th:each="pdfFile : ${pdfFiles}">
-                <!--send file name and subject id-->
-                <div>
-                    <a th:href="@{/file/view/{fileName}/{subjectId}(fileName=${pdfFile.codingFileName}, subjectId=${subject.id})}">
-                        <span th:text="${pdfFile.originalFileName}">File name</span>
-                    </a>
-                </div>
-
-                <a class="object-link" th:href="@{/file/download/{fileName}/{subjectId}(fileName=${pdfFile.codingFileName}, subjectId=${subject.id})}">
-                    Download
-                </a>
-                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
-                        th:data-subject-id="${subject.id}" th:data-or-file-name="${pdfFile.originalFileName}"
-                        th:data-coding-file-name="${pdfFile.codingFileName}">
-                    Delete
-                </button>
-            </li>
-        </ul>
+                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal"
+                            th:data-subject-id="${subject.id}" th:data-or-file-name="${file.originalFileName}"
+                            th:data-coding-file-name="${file.codingFileName}">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div style="display: flex">
         <form class="file-upload-form" method='post' th:action="@{/file/upload}" enctype="multipart/form-data">
             <input type="hidden" name="MAX_FILE_SIZE" value="5000000">
             <input type="hidden" th:value="${subject.id}" id="subject-id" name="subject-id"/>
@@ -94,14 +73,15 @@
             <div id="file-list"></div>
             <input id="submit-button" disabled type='submit' value='Upload'>
         </form>
-        <div class='message-div message-div_hidden' id='message-div'></div>
+        <p style="margin-left: 40%; color: white">All non-alphanumeric Latin characters, including spaces and special symbols, will be replaced with an underscore (_). Only Latin letters, digits, dots, and hyphens are allowed.</p>
+        </div>
+            <div class='message-div message-div_hidden' id='message-div'></div>
         <div class='message-div-window message-div_hidden-window' id='message-div-window'></div>
 
         <!--        <form class="file-upload-form" method='post' th:action="@{/file/upload}" enctype="multipart/form-data">-->
         <!--            <input type="hidden" name="MAX_FILE_SIZE" value="5000000">-->
         <!--            <input type="hidden" th:value="${subject.id}" id="subject-id" name="subject-id"/>-->
         <!--            <input type='file' name='file' class='file-drop' id='file-drop' multiple required onchange="checkFileSize(this.files)"><br>-->
-
         <!--            <input type='submit' value='Загрузить'>-->
         <!--        </form>-->
         <!--        <div class='message-div message-div_hidden' id='message-div'></div>-->
@@ -136,6 +116,7 @@
 
 </body>
 <script src="/static/js/filesUploading.js"></script>
+
 <script>
     $(document).ready(function () {
         $('#confirmDeleteModal').on('show.bs.modal', function (event) {

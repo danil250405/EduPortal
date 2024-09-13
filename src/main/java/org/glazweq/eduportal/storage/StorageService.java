@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.StandardCopyOption;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,12 +36,12 @@ public class StorageService {
         log.debug("Uploading file: fileName {}, subject name: {}", file.getOriginalFilename(), subject.getName());
 
         try {
-            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            String fileName = sanitizeName(UUID.randomUUID().toString() + "_" + file.getOriginalFilename());
+
             Path uploadPath = createDirectoryStructure(subject).resolve(fileName);
 
             Files.copy(file.getInputStream(), uploadPath, StandardCopyOption.REPLACE_EXISTING);
-
-            saveOriginalFileName(file.getOriginalFilename(), fileName, subject);
+            saveOriginalFileName(file.getOriginalFilename(), fileName, subject, file.getSize());
 
             log.info("File uploaded successfully: {}", uploadPath);
         } catch (IOException e) {
@@ -54,31 +52,31 @@ public class StorageService {
 
     private Path createDirectoryStructure(Subject subject) throws IOException {
         Path basePath = Paths.get(uploadDir);
-        Path facultyPath = basePath.resolve(sanitizePath(subject.getSpecialty().getFaculty().getName()));
-        Path specialtyPath = facultyPath.resolve(sanitizePath(subject.getSpecialty().getName()));
-        Path subjectPath = specialtyPath.resolve(sanitizePath(subject.getName()));
+        Path facultyPath = basePath.resolve(sanitizeName(subject.getSpecialty().getFaculty().getName()));
+        Path specialtyPath = facultyPath.resolve(sanitizeName(subject.getSpecialty().getName()));
+        Path subjectPath = specialtyPath.resolve(sanitizeName(subject.getName()));
 
         Files.createDirectories(subjectPath);
 
         return subjectPath;
     }
 
-    private String sanitizePath(String path) {
-        return path.replaceAll("[^a-zA-Z0-9.-]", "_");
+    private String sanitizeName(String name) {
+        return name.replaceAll("[^a-zA-Z0-9.-]", "_");
     }
 
 
 
-    private void saveOriginalFileName(String originalFileName, String s3FileName, Subject subject) {
+    private void saveOriginalFileName(String originalFileName, String codingFileName, Subject subject, Long fileSize) {
     String fileExtension = getFileExtension(originalFileName);
-        log.debug("Saving file metadata for original file name: {}, S3 file name: {}, extension: {}", originalFileName, s3FileName, fileExtension);
+        log.debug("Saving file metadata for original file name: {}, S3 file name: {}, extension: {}", originalFileName, codingFileName, fileExtension);
 
         try {
-            FileMetadata fileMetadata = new FileMetadata(originalFileName, s3FileName, fileExtension, subject);
+            FileMetadata fileMetadata = new FileMetadata(sanitizeName(originalFileName), codingFileName, fileExtension, subject, fileSize);
             fileMetadataService.saveFileMetadataInDb(fileMetadata);
-            log.info("File metadata saved successfully for file: {}", s3FileName);
+            log.info("File metadata saved successfully for file: {}", codingFileName);
         } catch (Exception e) {
-            log.error("Error saving file metadata for file: {}", s3FileName, e);
+            log.error("Error saving file metadata for file: {}", codingFileName, e);
         }
     }
     public static String getFileExtension(String fileName) {
@@ -91,7 +89,7 @@ public class StorageService {
 
 
 public byte[] downloadFile(String fileName, Subject subject) throws IOException {
-
+    fileName =sanitizeName(fileName);
     Path filePath = getFilePath(fileName, subject);
 
     System.out.println(filePath);
@@ -129,30 +127,30 @@ public void deleteFile(String fileName, Subject subject) {
         e.getMessage();
     }
 }
-    public byte[] viewFile(String fileName, Subject subject) throws IOException {
-
-        Path filePath = getFilePath(fileName, subject);
-
-        try {
-            if (!Files.exists(filePath)) {
-                log.error("File not found: {}", fileName);
-                throw new IOException("File not found: " + fileName);
-            }
-
-            byte[] fileContent = Files.readAllBytes(filePath);
-            log.info("File downloaded successfully: {}", fileName);
-            return fileContent;
-        } catch (IOException e) {
-            log.error("Error reading file: {}", fileName, e);
-            throw new IOException("Error reading file: " + fileName, e);
-        }
-    }
+//    public byte[] viewFile(String fileName, Subject subject) throws IOException {
+//
+//        Path filePath = getFilePath(fileName, subject);
+//
+//        try {
+//            if (!Files.exists(filePath)) {
+//                log.error("File not found: {}", fileName);
+//                throw new IOException("File not found: " + fileName);
+//            }
+//
+//            byte[] fileContent = Files.readAllBytes(filePath);
+//            log.info("File downloaded successfully: {}", fileName);
+//            return fileContent;
+//        } catch (IOException e) {
+//            log.error("Error reading file: {}", fileName, e);
+//            throw new IOException("Error reading file: " + fileName, e);
+//        }
+//    }
     public Path getFilePath(String fileName, Subject subject) {
         return Paths.get(uploadDir)
-                .resolve(sanitizePath(subject.getSpecialty().getFaculty().getName()))
-                .resolve(sanitizePath(subject.getSpecialty().getName()))
-                .resolve(sanitizePath(subject.getName()))
-                .resolve(sanitizePath(fileName));
+                .resolve(sanitizeName(subject.getSpecialty().getFaculty().getName()))
+                .resolve(sanitizeName(subject.getSpecialty().getName()))
+                .resolve(sanitizeName(subject.getName()))
+                .resolve(sanitizeName(fileName));
     }
 
     public String getMimeType(String fileName) {

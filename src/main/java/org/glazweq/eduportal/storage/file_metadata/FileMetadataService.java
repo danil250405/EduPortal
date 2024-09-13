@@ -17,7 +17,11 @@ public class FileMetadataService {
 
     }
     public List<FileMetadata> takeFilesBySubjectAndExtension(Subject subject, String extension){
+
         return fileMetadataRepository.getFileMetadataBySubjectAndExtension(subject, extension);
+    }
+    public List<FileMetadata> takeFilesBySubject(Subject subject){
+        return fileMetadataRepository.getFileMetadataBySubject(subject);
     }
     public FileMetadata findFileByCodingName(String fileCodingName){
         return fileMetadataRepository.getFileMetadataByCodingFileName(fileCodingName);

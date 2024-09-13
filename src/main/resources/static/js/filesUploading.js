@@ -87,4 +87,77 @@ function checkFileSize(files) {
 
 
 
-//del Modal
+function sortTable(n) {
+    var table = document.getElementById("fileTable");
+    var thead = table.getElementsByTagName("thead")[0];
+    var headers = thead.getElementsByTagName("th");
+    var dir = "asc";
+
+    // Remove 'active' class from all headers
+    for (var i = 0; i < headers.length; i++) {
+        headers[i].classList.remove("active");
+    }
+
+    // Add 'active' class to current header
+    headers[n].classList.add("active");
+
+    if (headers[n].classList.contains("asc")) {
+        dir = "desc";
+        headers[n].classList.remove("asc");
+        headers[n].classList.add("desc");
+    } else {
+        headers[n].classList.remove("desc");
+        headers[n].classList.add("asc");
+    }
+
+    var rows, switching, i, x, y, shouldSwitch, switchcount = 0;
+    switching = true;
+
+    while (switching) {
+        switching = false;
+        rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            if (n === 0) {
+                x = rows[i].getElementsByTagName("TD")[n].getElementsByTagName("SPAN")[0].innerText.toLowerCase();
+                y = rows[i + 1].getElementsByTagName("TD")[n].getElementsByTagName("SPAN")[0].innerText.toLowerCase();
+            } else if (n === 2) {
+                x = parseFloat(rows[i].getElementsByTagName("TD")[n].innerText);
+                y = parseFloat(rows[i + 1].getElementsByTagName("TD")[n].innerText);
+            } else if (n === 3) {
+                x = new Date(rows[i].getElementsByTagName("TD")[n].innerText);
+                y = new Date(rows[i + 1].getElementsByTagName("TD")[n].innerText);
+            } else {
+                x = rows[i].getElementsByTagName("TD")[n].innerText.toLowerCase();
+                y = rows[i + 1].getElementsByTagName("TD")[n].innerText.toLowerCase();
+            }
+            if (dir == "asc") {
+                if (x > y) {
+                    shouldSwitch = true;
+                    break;
+                }
+            } else if (dir == "desc") {
+                if (x < y) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            switchcount ++;
+        }
+    }
+}
+
+// Add event listeners for sorting
+document.addEventListener('DOMContentLoaded', function() {
+    var headers = document.querySelectorAll('#fileTable th.sortable');
+    headers.forEach(function(header) {
+        header.addEventListener('click', function() {
+            var n = this.getAttribute('data-sort');
+            sortTable(parseInt(n));
+        });
+    });
+});

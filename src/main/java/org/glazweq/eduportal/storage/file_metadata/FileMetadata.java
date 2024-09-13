@@ -2,12 +2,14 @@ package org.glazweq.eduportal.storage.file_metadata;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 import org.glazweq.eduportal.education.specialty.Specialty;
 import org.glazweq.eduportal.education.subject.Subject;
 import java.time.LocalDate;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "file_metadata")
 public class FileMetadata {
     @Id
@@ -26,15 +28,17 @@ public class FileMetadata {
     @ManyToOne
     @JoinColumn(name = "subject_id")
     private Subject subject;
-
+    @Column(nullable = false)
+    private Long fileSize;  // размер файла в байтах
     @Column(nullable = false, updatable = false)
     private LocalDate uploadDate;
 
-    public FileMetadata(String originalFileName, String codingFileName, String extension, Subject subject) {
+    public FileMetadata(String originalFileName, String codingFileName, String extension, Subject subject, Long fileSize) {
         this.originalFileName = originalFileName;
         this.codingFileName = codingFileName;
         this.extension = extension;
         this.subject = subject;
+        this.fileSize = fileSize;
     }
 
     public FileMetadata() {

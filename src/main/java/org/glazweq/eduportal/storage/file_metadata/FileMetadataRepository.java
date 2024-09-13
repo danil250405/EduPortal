@@ -10,5 +10,6 @@ import java.util.List;
 @Repository
 public interface FileMetadataRepository extends JpaRepository<FileMetadata, Long> {
     List<FileMetadata> getFileMetadataBySubjectAndExtension(Subject subject, String Extension);
+    List<FileMetadata> getFileMetadataBySubject(Subject subject);
     FileMetadata getFileMetadataByCodingFileName(String codingFileName);
 }
