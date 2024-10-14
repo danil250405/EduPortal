@@ -14,6 +14,14 @@ import java.util.List;
 public class SpecialtyController {
     SpecialtyService specialtyService;
     FacultyService facultyService;
+    @GetMapping("/specialtiesAll")
+    public String showSpecialtyPage(Model model) {
+        List<Specialty> specialties = specialtyService.getAllSpecialties();
+        System.out.println(specialties.get(0).getName());
+
+        model.addAttribute("specialties", specialties);
+        return "specialties-all";
+    }
     @GetMapping("/faculties/{facultyAbbreviation}")
     public String redirectToFacultyPage(@PathVariable("facultyAbbreviation") String facultyAbbreviation,
                                         Model model) {
@@ -61,5 +69,16 @@ public class SpecialtyController {
         String infoMessage = isDeleted ? "Specialty '" + specialtyName + "' deleted successfully" : "You can't delete " + specialtyName;
         redirectAttributes.addFlashAttribute("infoMessage", infoMessage);
         return "redirect:/faculties/" + specialtyFacultyAbbr;
+    }
+    @PostMapping("/specialtiesAll/delete")
+    public String deleteSpecialtiesFromAllPage(@RequestParam("specialty-id") Long id,
+                                    @RequestParam("del-specialty-name") String specialtyName,
+                                    RedirectAttributes redirectAttributes) {
+        System.out.println("11111");
+        boolean isDeleted = specialtyService.deleteSpecialty(id);
+        System.out.println("spec name " + specialtyName);
+        String infoMessage = isDeleted ? "Specialty '" + specialtyName + "' deleted successfully" : "You can't delete " + specialtyName;
+        redirectAttributes.addFlashAttribute("infoMessage", infoMessage);
+        return "redirect:/specialties/";
     }
 }

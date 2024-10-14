@@ -58,7 +58,7 @@ function handleDrop(e) {
 }
 
 /*<![CDATA[*/
-const maxFileSizeBytes = /*[[${@environment.getProperty('spring.servlet.multipart.max-file-size')}]]*/ 50000000;
+const maxFileSizeBytes = /*[[${@environment.getProperty('spring.servlet.multipart.max-file-size')}]]*/ 500000000;
 
 function checkFileSize(files) {
     const messageDivElement = document.getElementById('message-div-window');

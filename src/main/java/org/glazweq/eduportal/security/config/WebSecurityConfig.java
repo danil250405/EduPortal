@@ -54,12 +54,14 @@ public class WebSecurityConfig  {
 
                                 .requestMatchers("/").permitAll()
                                 .requestMatchers("/login").permitAll()
+                                .requestMatchers("/error-page").permitAll()
 
                                 .requestMatchers("/registration").permitAll()
                                 .requestMatchers("/registration/save").permitAll()
                                 .requestMatchers("/registration/confirm").permitAll()
 //                                  TODO: optimize this shit
                                 .requestMatchers("/faculties").permitAll()
+                                .requestMatchers("/specialtiesAll").permitAll()
                                 .requestMatchers("/faculties/{facultyAbbreviation}").permitAll()
                                 .requestMatchers("/faculties/{facultyAbbr}/{specialtyAbbr}").permitAll()
                                 .requestMatchers("/faculties/{facultyAbbr}/{specialtyAbbr}/{subjectAddr}").permitAll()

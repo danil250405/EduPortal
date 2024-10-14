@@ -45,7 +45,7 @@ public class AppUserService implements UserDetailsService {
 
         return "success";
     }
-
+ 
     public String getMsgAboutFirstName(String firstName) {
         if (firstName.length() > 20) {
             return "First name must be up to 20 characters long";

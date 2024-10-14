@@ -91,6 +91,7 @@ public class AuthController {
     private LocalDateTime getCurrentDateTime() {
         return LocalDateTime.now();
     }
+    @GetMapping("/error-page")
     @ExceptionHandler(IllegalStateException.class)
     public String handleIllegalStateException(IllegalStateException ex, Model model) {
         // Обработка исключения

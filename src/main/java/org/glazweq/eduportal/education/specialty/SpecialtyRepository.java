@@ -9,7 +9,6 @@ public interface SpecialtyRepository extends JpaRepository<Specialty, Long> {
     List<Specialty> findAllByFaculty(Faculty faculty);
     Specialty findSpecialtyByAbbreviation(String abbreviation);
     Specialty findSpecialtyById(Long id);
-
     boolean existsByNameAndFacultyId(String name, Long facultyId);
     boolean existsByAbbreviationAndFacultyId(String abbr, Long facultyId);
 }
