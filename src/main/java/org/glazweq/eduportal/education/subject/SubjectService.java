@@ -20,7 +20,9 @@ public class SubjectService {
 
 
 //    Subjects
-
+    public List<Subject> getAllSubjects() {
+    return subjectRepository.findAll();
+}
     public List<Subject> getAllSubjectsBySpecialty(Specialty specialty) {
         return subjectRepository.findAllBySpecialty(specialty);
     }

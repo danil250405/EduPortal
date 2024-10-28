@@ -21,28 +21,37 @@
 
 <main>
     <div class="container wrap-box">
+
         <div class="mt-3 inputs">
             <i class="fa fa-search"></i>
             <input type="text" id="searchInput" class="form-control" placeholder="Search specialty...">
         </div>
         <p class="info-msg" th:text="${infoMessage}">Info message</p>
         <ul class="education-list">
-            <li class="education-item" th:each="specialty : ${specialties}">
-                <a class="object-link" th:href="@{/faculties/{facultyAbbr}/{specialtyAbbr}(facultyAbbr=${specialty.faculty.abbreviation}, specialtyAbbr=${specialty.abbreviation})}">
-                    <span th:text="${specialty.faculty.abbreviation}">faculty abbreviation</span>
+            <li class="education-item" th:each="subject : ${subjects}">
+                <a  class="object-link" th:href="@{/faculties/{facultyAbbr}/{specialtyAbbr}/{subjectAbbr}
+                                                    (facultyAbbr=${subject.specialty.faculty.abbreviation},
+                                                    specialtyAbbr=${subject.specialty.abbreviation},
+                                                    subjectAbbr=${subject.abbreviation})}">
+                    <span th:text="${subject.getSpecialty().getFaculty().getAbbreviation()}">faculty abbreviation</span>
                     <span> - </span>
-                <span th:text="${specialty.abbreviation}">specialty abbreviation</span>
+
+                    <span th:text="${subject.getSpecialty().getAbbreviation()}">specialty abbreviation</span>
                     <span> - </span>
-                    <span th:text="${specialty.name}">specialty name</span>
+                    <span th:text="${subject.name}">subject name</span>
+                    <span th:text="${subject.abbreviation}">subject abbreviation</span>
+
                 </a>
-                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
-                        th:data-specialty-id="${specialty.id}" th:data-specialty-name="${specialty.name}">
+                <button type="button" class="btn btn-danger" data-toggle="modal"
+                        data-target="#confirmDeleteModal"
+                        th:data-subject-id="${subject.id}" th:data-subject-name="${subject.name}"
+                        th:data-subject-specialty-id="${subject.specialty.id}">
                     Delete
                 </button>
             </li>
         </ul>
     </div>
-    <!--    confirmation to delete specialty-->
+    <!--    confirmation to delete subject-->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog"
          aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -54,13 +63,13 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete the specialty "<span id="del-span-specialty-name"></span>"?
+                    Are you sure you want to delete the subject "<span id="del-span-subject-name"></span>"?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <form id="deleteForm" th:action="@{/specialtiesAll/delete}" method="post">
-                        <input type="hidden" id="specialty-id" name="specialty-id">
-                        <input type="hidden" id="del-specialty-name" name="del-specialty-name">
+                    <form id="deleteForm" th:action="@{/subjectsAll/delete}" method="post">
+                        <input type="hidden" id="subject-id" name="subject-id">
+                        <input type="hidden" id="del-subject-name" name="del-subject-name">
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </div>
@@ -92,13 +101,13 @@
         // Код для модального окна удаления
         $('#confirmDeleteModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
-            var specialtyId = button.data('specialty-id');
-            var specialtyName = button.data('specialty-name');
+            var subjectId = button.data('subject-id');
+            var subjectName = button.data('subject-name');
 
             var modal = $(this);
-            modal.find('#specialty-id').val(specialtyId);
-            modal.find('#del-span-specialty-name').text(specialtyName);
-            modal.find('#del-specialty-name').val(specialtyName);
+            modal.find('#subject-id').val(subjectId);
+            modal.find('#del-span-subject-name').text(subjectName);
+            modal.find('#del-subject-name').val(subjectName);
         });
     });
 </script>

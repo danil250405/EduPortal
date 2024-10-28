@@ -12,9 +12,15 @@ public class SpecialtyService {
 
     private final SpecialtyRepository specialtyRepository;
 
-    public List<Specialty> getAllSpecialtiesByFaculty(Faculty faculty) {
-        return specialtyRepository.findAllByFaculty(faculty);
+    public List<Specialty> getSpecialtiesByFacultyRange(Faculty faculty, int page, int size) {
+        int offset = page * size;  // Вычисляем смещение
+        return specialtyRepository.findSpecialtiesByFacultyWithRange(
+                faculty.getId(),
+                offset,
+                size
+        );
     }
+
 
     //    specialties
     public List<Specialty> getAllSpecialties() {
@@ -50,5 +56,9 @@ public class SpecialtyService {
     }
     public boolean specialtyNameExistsOnSameFaculty(String name, Long facultyId) {
         return specialtyRepository.existsByNameAndFacultyId(name, facultyId);
+    }
+
+    public long countByFaculty(Faculty faculty) {
+        return specialtyRepository.countByFaculty(faculty);
     }
 }

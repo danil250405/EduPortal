@@ -1,5 +1,6 @@
 package org.glazweq.eduportal.education.specialty;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.glazweq.eduportal.education.faculty.Faculty;
 import org.glazweq.eduportal.education.faculty.FacultyService;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 @Controller
@@ -24,13 +26,25 @@ public class SpecialtyController {
     }
     @GetMapping("/faculties/{facultyAbbreviation}")
     public String redirectToFacultyPage(@PathVariable("facultyAbbreviation") String facultyAbbreviation,
-                                        Model model) {
+                                        Model model,
+                                        @RequestParam(defaultValue = "1") int page,
+                                        HttpServletRequest request) {
 
         Faculty faculty = facultyService.getFacultyByAbbreviation(facultyAbbreviation);
         model.addAttribute("faculty", faculty);
-        List<Specialty> specialties = specialtyService.getAllSpecialtiesByFaculty(faculty);
+        int itemsPerPage = 10;
+        List<Specialty> specialties = specialtyService.getSpecialtiesByFacultyRange(faculty, page, itemsPerPage);
         model.addAttribute("specialties", specialties);
+        // Получаем общее количество для пагинации
+        long totalItems = specialtyService.countByFaculty(faculty);
+        int totalPages = (int) Math.ceil((double) totalItems / itemsPerPage);
 
+        // Добавление атрибутов в модель
+        model.addAttribute("specialties", specialties);
+        model.addAttribute("currentUrl", request.getRequestURI());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("itemsPerPage", itemsPerPage);
         return "specialties-page";
 
     }
@@ -79,6 +93,6 @@ public class SpecialtyController {
         System.out.println("spec name " + specialtyName);
         String infoMessage = isDeleted ? "Specialty '" + specialtyName + "' deleted successfully" : "You can't delete " + specialtyName;
         redirectAttributes.addFlashAttribute("infoMessage", infoMessage);
-        return "redirect:/specialties/";
+        return "redirect:/specialtiesAll";
     }
 }

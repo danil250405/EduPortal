@@ -62,6 +62,7 @@ public class WebSecurityConfig  {
 //                                  TODO: optimize this shit
                                 .requestMatchers("/faculties").permitAll()
                                 .requestMatchers("/specialtiesAll").permitAll()
+                                .requestMatchers("/subjectsAll").permitAll()
                                 .requestMatchers("/faculties/{facultyAbbreviation}").permitAll()
                                 .requestMatchers("/faculties/{facultyAbbr}/{specialtyAbbr}").permitAll()
                                 .requestMatchers("/faculties/{facultyAbbr}/{specialtyAbbr}/{subjectAddr}").permitAll()
@@ -72,9 +73,10 @@ public class WebSecurityConfig  {
 
                                 .requestMatchers("/specialties/add").permitAll()
                                 .requestMatchers("/specialties/delete").permitAll()
-
+                                .requestMatchers("/specialtiesAll/delete").permitAll()
                                 .requestMatchers("/subject/add").permitAll()
                                 .requestMatchers("/subject/delete").permitAll()
+                                .requestMatchers("/subjectsAll/delete").permitAll()
 
                                 .requestMatchers("/file/**").permitAll()
 

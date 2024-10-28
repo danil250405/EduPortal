@@ -16,7 +16,16 @@ import java.util.stream.Collectors;
 public class SubjectController {
     SubjectService subjectService;
     SpecialtyService specialtyService;
+
+
     //    Subjects
+    @GetMapping("/subjectsAll")
+    public String showSpecialtyPage(Model model) {
+        List<Subject> subjects = subjectService.getAllSubjects();
+
+        model.addAttribute("subjects", subjects);
+        return "subjects-all";
+    }
     @GetMapping("/faculties/{facultyAbbr}/{specialtyAbbr}")
     public String redirectToSpecialtyPage(@PathVariable("specialtyAbbr") String specialtyAbbreviation,
                                           Model model, @PathVariable String facultyAbbr) {
@@ -89,5 +98,15 @@ public class SubjectController {
         redirectAttributes.addFlashAttribute("infoMessage", infoMessage);
         return "redirect:/faculties/" + specialty.getFaculty().getAbbreviation() + "/" + specialty.getAbbreviation();
     }
-
+    @PostMapping("/subjectsAll/delete")
+    public String deleteSubjectFromAllPage(@RequestParam("subject-id") Long id,
+                                               @RequestParam("del-subject-name") String subjectName,
+                                               RedirectAttributes redirectAttributes) {
+        System.out.println("11111");
+        boolean isDeleted = subjectService.deleteSubject(id);
+        System.out.println("ssubject name " + subjectName);
+        String infoMessage = isDeleted ? "subject '" + subjectName + "' deleted successfully" : "You can't delete " + subjectName;
+        redirectAttributes.addFlashAttribute("infoMessage", infoMessage);
+        return "redirect:/subjectsAll";
+    }
 }
