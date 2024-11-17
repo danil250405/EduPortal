@@ -47,6 +47,7 @@ public class SubjectController {
 
             switch (type) {
                 case "Compulsory":
+
                     compulsorySubjects.add(subject);
                     break;
                 case "Compulsory elective":

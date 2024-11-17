@@ -44,12 +44,7 @@
             </li>
         </ul>
 
-        <!-- Подключение компонента пагинации -->
-        <div th:replace="~{fragments/pagination.html :: pagination(
-    currentUrl=${currentUrl},
-    currentPage=${currentPage},
-    totalPages=${totalPages})}">
-        </div>
+
 
         <form class="edu-form" th:action="@{/specialties/add}" method="post">
             <div class="form-item">

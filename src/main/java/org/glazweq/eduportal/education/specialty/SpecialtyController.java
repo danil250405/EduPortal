@@ -26,14 +26,13 @@ public class SpecialtyController {
     }
     @GetMapping("/faculties/{facultyAbbreviation}")
     public String redirectToFacultyPage(@PathVariable("facultyAbbreviation") String facultyAbbreviation,
-                                        Model model,
-                                        @RequestParam(defaultValue = "1") int page,
-                                        HttpServletRequest request) {
+                                        Model model
+                                        ) {
 
         Faculty faculty = facultyService.getFacultyByAbbreviation(facultyAbbreviation);
         model.addAttribute("faculty", faculty);
         int itemsPerPage = 10;
-        List<Specialty> specialties = specialtyService.getSpecialtiesByFacultyRange(faculty, page, itemsPerPage);
+        List<Specialty> specialties = specialtyService.getAllSpecialtiesByFaculty(facultyService.getFacultyByAbbreviation(facultyAbbreviation));
         model.addAttribute("specialties", specialties);
         // Получаем общее количество для пагинации
         long totalItems = specialtyService.countByFaculty(faculty);
@@ -41,10 +40,10 @@ public class SpecialtyController {
 
         // Добавление атрибутов в модель
         model.addAttribute("specialties", specialties);
-        model.addAttribute("currentUrl", request.getRequestURI());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("itemsPerPage", itemsPerPage);
+//        model.addAttribute("currentUrl", request.getRequestURI());
+//        model.addAttribute("currentPage", page);
+//        model.addAttribute("totalPages", totalPages);
+//        model.addAttribute("itemsPerPage", itemsPerPage);
         return "specialties-page";
 
     }

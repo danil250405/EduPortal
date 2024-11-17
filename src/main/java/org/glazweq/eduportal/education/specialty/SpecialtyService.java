@@ -26,6 +26,9 @@ public class SpecialtyService {
     public List<Specialty> getAllSpecialties() {
         return specialtyRepository.findAll();
     }
+    public List<Specialty> getAllSpecialtiesByFaculty(Faculty faculty) {
+        return specialtyRepository.findAllByFaculty(faculty);
+    }
 
     public void addSpecialty(Specialty specialty) {
         specialtyRepository.save(specialty);

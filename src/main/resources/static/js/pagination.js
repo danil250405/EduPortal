@@ -1,118 +1,55 @@
-class Pagination {
-    constructor(options) {
-        this.searchInput = document.getElementById(options.searchInputId);
-        this.itemsContainer = document.querySelector(options.itemsContainerClass);
-        this.items = this.itemsContainer.querySelectorAll(options.itemClass);
-        this.itemsPerPage = options.itemsPerPage || 10;
-        this.currentPage = 0;
+class SpecialtyPagination {
+    constructor() {
+        this.searchInput = document.getElementById('searchInput');
+        this.specialtyList = document.querySelector('.education-list');
+        this.paginationContainer = document.querySelector('.pagination');
+        this.currentUrl = this.paginationContainer?.dataset.currentUrl || '';
 
         this.init();
     }
 
     init() {
-        // Инициализация поиска
         if (this.searchInput) {
-            this.searchInput.addEventListener('input', () => {
-                this.handleSearch();
-            });
+            this.searchInput.addEventListener('input', this.handleSearch.bind(this));
         }
 
-        // Инициализация пагинации
-        document.querySelectorAll('.pagination .page-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const href = link.getAttribute('href');
-                if (href) {
-                    const pageNum = new URLSearchParams(href.split('?')[1]).get('page');
-                    if (pageNum !== null) {
-                        this.currentPage = parseInt(pageNum);
-                        this.updateDisplay();
+        // Add click handlers for pagination
+        if (this.paginationContainer) {
+            this.paginationContainer.addEventListener('click', (e) => {
+                const link = e.target.closest('.page-link');
+                if (link && !link.parentElement.classList.contains('disabled')) {
+                    e.preventDefault();
+                    const url = new URL(link.href);
+                    // Only navigate if we're not searching
+                    if (!this.searchInput.value.trim()) {
+                        window.location.href = link.href;
                     }
                 }
             });
-        });
-
-        // Начальное отображение
-        this.updateDisplay();
+        }
     }
 
     handleSearch() {
         const searchTerm = this.searchInput.value.toLowerCase().trim();
+        const items = this.specialtyList.querySelectorAll('.education-item');
 
-        // Фильтрация элементов
-        this.items.forEach(item => {
+        let visibleCount = 0;
+
+        items.forEach(item => {
             const text = item.textContent.toLowerCase();
-            item.dataset.visible = text.includes(searchTerm) ? 'true' : 'false';
+            const isVisible = text.includes(searchTerm);
+            item.style.display = isVisible ? '' : 'none';
+            if (isVisible) visibleCount++;
         });
 
-        // Сброс на первую страницу при поиске
-        this.currentPage = 0;
-        this.updateDisplay();
-        this.updatePaginationVisibility();
-    }
-
-    updateDisplay() {
-        const visibleItems = Array.from(this.items).filter(
-            item => item.dataset.visible !== 'false'
-        );
-
-        visibleItems.forEach((item, index) => {
-            const startIndex = this.currentPage * this.itemsPerPage;
-            const endIndex = startIndex + this.itemsPerPage;
-
-            if (index >= startIndex && index < endIndex) {
-                item.style.display = '';
-            } else {
-                item.style.display = 'none';
-            }
-        });
-
-        this.updatePaginationButtons();
-    }
-
-    updatePaginationButtons() {
-        const visibleItemsCount = Array.from(this.items).filter(
-            item => item.dataset.visible !== 'false'
-        ).length;
-
-        const totalPages = Math.ceil(visibleItemsCount / this.itemsPerPage);
-
-        // Обновление состояния кнопок
-        document.querySelectorAll('.pagination .page-item').forEach(pageItem => {
-            const link = pageItem.querySelector('.page-link');
-            if (!link) return;
-
-            if (link.textContent === 'Previous') {
-                pageItem.classList.toggle('disabled', this.currentPage === 0);
-            } else if (link.textContent === 'Next') {
-                pageItem.classList.toggle('disabled', this.currentPage >= totalPages - 1);
-            } else {
-                const pageNum = parseInt(link.textContent) - 1;
-                if (!isNaN(pageNum)) {
-                    pageItem.classList.toggle('active', pageNum === this.currentPage);
-                }
-            }
-        });
-    }
-
-    updatePaginationVisibility() {
-        const visibleItemsCount = Array.from(this.items).filter(
-            item => item.dataset.visible !== 'false'
-        ).length;
-
-        const paginationElement = document.querySelector('.pagination');
-        if (paginationElement) {
-            paginationElement.style.display = visibleItemsCount > this.itemsPerPage ? '' : 'none';
+        // Hide pagination when searching
+        if (this.paginationContainer) {
+            this.paginationContainer.style.display = searchTerm ? 'none' : '';
         }
     }
 }
 
-// Инициализация при загрузке страницы
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
-    new Pagination({
-        searchInputId: 'searchInput',
-        itemsContainerClass: '.education-list',
-        itemClass: '.education-item',
-        itemsPerPage: 10
-    });
+    new SpecialtyPagination();
 });
