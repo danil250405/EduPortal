@@ -29,6 +29,7 @@
                 <th class="sortable" data-sort="1">Extension <span class="sort-icon">&#9650;&#9660;</span></th>
                 <th class="sortable" data-sort="2">Size <span class="sort-icon">&#9650;&#9660;</span></th>
                 <th class="sortable" data-sort="3">Upload Date <span class="sort-icon">&#9650;&#9660;</span></th>
+                <th class="sortable" data-sort="4">Place <span class="sort-icon">&#9650;&#9660;</span></th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -40,8 +41,12 @@
                     </a>
                 </td>
                 <td th:text="${file.extension}">Extension</td>
-                <td th:text="${#numbers.formatDecimal(file.fileSize / 1024, 1, 2) + ' KB'}">Size</td>
+                <td th:text="${file.fileSize >= 1024 * 1024 ?
+                    #numbers.formatDecimal(file.fileSize / 1024 / 1024, 1, 2) + ' MB' :
+                    #numbers.formatDecimal(file.fileSize / 1024, 1, 2) + ' KB'}">Size</td>
                 <td th:text="${file.uploadDate}">Upload Date</td>
+                <td th:text="${file.place}">Place</td>
+
                 <td>
                     <a class="btn btn-primary btn-sm" th:href="@{/file/download/{fileName}/{subjectId}(fileName=${file.codingFileName}, subjectId=${subject.id})}">
                         Download
