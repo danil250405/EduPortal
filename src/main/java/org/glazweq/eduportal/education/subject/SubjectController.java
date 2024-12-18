@@ -56,6 +56,7 @@ public class SubjectController {
                 case "Elective":
                     electiveSubjects.add(subject);
                     break;
+
             }
         }
 
