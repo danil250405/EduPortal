@@ -33,7 +33,7 @@ file:
 cloud:
   aws:
     credentials:
-      access-key: AKIAYS2NQTNFDHI4IZK3
+      access-key: AKIAYS2NQTNFCBI2PFGY
       secret-key: 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
     region:
       static: eu-north-1

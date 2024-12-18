@@ -32,13 +32,15 @@ public class FileMetadata {
     private Long fileSize;  // размер файла в байтах
     @Column(nullable = false, updatable = false)
     private LocalDate uploadDate;
-
-    public FileMetadata(String originalFileName, String codingFileName, String extension, Subject subject, Long fileSize) {
+    @Column(nullable = false)
+    private String place;
+    public FileMetadata(String originalFileName, String codingFileName, String extension, Subject subject, Long fileSize, String place) {
         this.originalFileName = originalFileName;
         this.codingFileName = codingFileName;
         this.extension = extension;
         this.subject = subject;
         this.fileSize = fileSize;
+        this.place = place;
     }
 
     public FileMetadata() {

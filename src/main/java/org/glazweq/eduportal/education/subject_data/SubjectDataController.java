@@ -1,23 +1,16 @@
 package org.glazweq.eduportal.education.subject_data;
 
 import lombok.AllArgsConstructor;
-import org.glazweq.eduportal.education.faculty.Faculty;
-import org.glazweq.eduportal.education.specialty.Specialty;
 import org.glazweq.eduportal.education.subject.Subject;
 import org.glazweq.eduportal.education.subject.SubjectService;
 import org.glazweq.eduportal.storage.StorageService;
 import org.glazweq.eduportal.storage.file_metadata.FileMetadata;
 import org.glazweq.eduportal.storage.file_metadata.FileMetadataService;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -47,11 +40,19 @@ public class SubjectDataController {
     }
     @PostMapping("/file/upload")
     public String uploadFile(@RequestParam("file") MultipartFile[] files,
-                             @ModelAttribute("subject-id") Long subjectId) {
-        System.out.println("in upload method");
+                             @ModelAttribute("subject-id") Long subjectId,
+                             @RequestParam(value = "storage-location" )String storageLocation) {
+        System.out.println("in upload method==" + storageLocation);
         Subject subject = subjectService.getSubjectById(subjectId);
+        if (storageLocation.equals("Local")) {
         for (MultipartFile file : files) {
-            storageService.uploadFile(file, subject);
+            storageService.uploadFileLocal(file, subject);
+        }
+        }
+        else if (   storageLocation.equals("Amazon")) {
+            for (MultipartFile file : files) {
+                storageService.uploadFileAws(file, subject);
+            }
         }
         String facultyAbbr = subject.getSpecialty().getFaculty().getAbbreviation();
         String specialtyAbbr = subject.getSpecialty().getAbbreviation();
@@ -63,8 +64,9 @@ public class SubjectDataController {
                              @ModelAttribute("del-subject-id") Long subjectId) {
         System.out.println("in delete method");
         Subject subject = subjectService.getSubjectById(subjectId);
-
-        storageService.deleteFile(fileName, subject);
+         FileMetadata fileMetadata = fileMetadataService.findFileByCodingName(fileName);
+         if (fileMetadata.getPlace().equals("Local")) storageService.deleteLocalFile(fileName, subject);
+        else if (fileMetadata.getPlace().equals("Amazon")) storageService.deleteAmazonFile(fileName);
         String facultyAbbr = subject.getSpecialty().getFaculty().getAbbreviation();
         String specialtyAbbr = subject.getSpecialty().getAbbreviation();
         String subjectAbbr = subject.getAbbreviation();

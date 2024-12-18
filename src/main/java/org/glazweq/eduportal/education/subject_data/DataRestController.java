@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.glazweq.eduportal.education.subject.Subject;
 import org.glazweq.eduportal.education.subject.SubjectService;
 import org.glazweq.eduportal.storage.StorageService;
+import org.glazweq.eduportal.storage.file_metadata.FileMetadata;
 import org.glazweq.eduportal.storage.file_metadata.FileMetadataService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.io.IOException;
 
 @RestController
@@ -32,12 +32,22 @@ public class DataRestController {
     private StorageService storageService;
     FileMetadataService fileMetadataService;
 
+
     @GetMapping("/download/{fileName}/{subjectId}")
     public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName, @PathVariable Long subjectId) throws IOException {
         Subject subject = subjectService.getSubjectById(subjectId);
-        byte[] data = storageService.downloadFile(fileName, subject);
-        String originalName = fileMetadataService.findFileByCodingName(fileName).getOriginalFileName();
+        FileMetadata fileMetadata = fileMetadataService.findFileByCodingName(fileName);
+
+        byte[] data;
+        if (fileMetadata.getPlace().equals("Amazon")) {
+            data = storageService.downloadAmazonFile(fileName);
+        } else {
+            data = storageService.downloadLocalFile(fileName, subject);
+        }
+
+        String originalName = fileMetadata.getOriginalFileName();
         ByteArrayResource resource = new ByteArrayResource(data);
+
         return ResponseEntity
                 .ok()
                 .contentLength(data.length)
