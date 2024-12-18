@@ -55,28 +55,38 @@ public class DataRestController {
                 .header("Content-disposition", "attachment; filename=\"" + originalName + "\"")
                 .body(resource);
     }
-@GetMapping("/view/{fileName}/{subjectId}")
-public ResponseEntity<Resource> viewFile(@PathVariable String fileName, @PathVariable Long subjectId) {
-    try {
-        Subject subject = subjectService.getSubjectById(subjectId);
-        Path filePath = storageService.getFilePath(fileName, subject);
-        Resource resource = new UrlResource(filePath.toUri());
+    @GetMapping("/view/{fileName}/{subjectId}")
+    public ResponseEntity<Resource> viewFile(@PathVariable String fileName, @PathVariable Long subjectId) {
+        try {
+            Subject subject = subjectService.getSubjectById(subjectId);
+            FileMetadata fileMetadata = fileMetadataService.findFileByCodingName(fileName);
 
-        if (!resource.exists()) {
-            return ResponseEntity.notFound().build();
+            Resource resource;
+
+            if (fileMetadata.getPlace().equals("Amazon")) {
+                // Для файлов из S3
+                resource = storageService.getResourceFromS3(fileName, subject);
+            } else {
+                // Для локальных файлов (существующая логика)
+                Path filePath = storageService.getFilePath(fileName, subject);
+                resource = new UrlResource(filePath.toUri());
+            }
+
+            if (!resource.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            String contentType = storageService.getMimeType(fileName);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
+                    .body(resource);
+        } catch (IOException e) {
+            log.error("Failed to view file", e);
+            return ResponseEntity.badRequest().build();
         }
-
-        String contentType = storageService.getMimeType(fileName);
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
-                .body(resource);
-    } catch (IOException e) {
-        log.error("Failed to view file", e);
-        return ResponseEntity.badRequest().build();
     }
-}
 
 
 }

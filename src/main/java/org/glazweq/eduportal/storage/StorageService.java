@@ -2,10 +2,7 @@ package org.glazweq.eduportal.storage;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.glazweq.eduportal.education.subject.Subject;
@@ -14,6 +11,7 @@ import org.glazweq.eduportal.storage.file_metadata.FileMetadataService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -117,13 +115,13 @@ public class StorageService {
             log.error("Error saving file metadata for file: {}", codingFileName, e);
         }
     }
-    public static String getFileExtension(String fileName) {
-        int dotIndex = fileName.lastIndexOf('.');
-        if (dotIndex == -1) {
-            return ""; // Файл не имеет расширения
-        }
-        return fileName.substring(dotIndex + 1);
-    }
+//    public static String getFileExtension(String fileName) {
+//        int dotIndex = fileName.lastIndexOf('.');
+//        if (dotIndex == -1) {
+//            return ""; // Файл не имеет расширения
+//        }
+//        return fileName.substring(dotIndex + 1);
+//    }
 
 
 public byte[] downloadLocalFile(String fileName, Subject subject) throws IOException {
@@ -213,6 +211,35 @@ public void deleteLocalFile(String fileName, Subject subject) {
 //            throw new IOException("Error reading file: " + fileName, e);
 //        }
 //    }
+public ByteArrayResource getResourceFromS3(String fileName, Subject subject) throws IOException {
+    try {
+        // Получаем объект из S3
+        S3Object s3Object = s3Client.getObject(bucketName, fileName);
+
+        // Получаем содержимое объекта
+        S3ObjectInputStream inputStream = s3Object.getObjectContent();
+
+        // Преобразуем содержимое в байты
+        byte[] fileBytes = IOUtils.toByteArray(inputStream);
+
+        // Создаем ByteArrayResource из байтов
+        return new ByteArrayResource(fileBytes);
+    } catch (AmazonS3Exception e) {
+        log.error("Error getting file from S3: {}", fileName, e);
+        throw new RuntimeException("Error getting file from S3: " + fileName, e);
+    } catch (SdkClientException | IOException e) {
+        log.error("Error processing S3 file: {}", fileName, e);
+        throw new RuntimeException("Error processing S3 file: " + fileName, e);
+    }
+}
+
+
+    // Метод для получения расширения файла
+    private String getFileExtension(String fileName) {
+        int dotIndex = fileName.lastIndexOf('.');
+        return dotIndex > 0 ? fileName.substring(dotIndex) : "";
+    }
+
     public Path getFilePath(String fileName, Subject subject) {
         return Paths.get(uploadDir)
                 .resolve(sanitizeName(subject.getSpecialty().getFaculty().getName()))
