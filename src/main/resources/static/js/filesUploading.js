@@ -86,7 +86,6 @@ function checkFileSize(files) {
 }
 
 
-
 function sortTable(n) {
     var table = document.getElementById("fileTable");
     var thead = table.getElementsByTagName("thead")[0];
@@ -122,8 +121,22 @@ function sortTable(n) {
                 x = rows[i].getElementsByTagName("TD")[n].getElementsByTagName("SPAN")[0].innerText.toLowerCase();
                 y = rows[i + 1].getElementsByTagName("TD")[n].getElementsByTagName("SPAN")[0].innerText.toLowerCase();
             } else if (n === 2) {
+                // Парсинг размера файла с учетом МБ и КБ
                 x = parseFloat(rows[i].getElementsByTagName("TD")[n].innerText);
                 y = parseFloat(rows[i + 1].getElementsByTagName("TD")[n].innerText);
+
+                // Конвертация в байты для корректного сравнения
+                if (rows[i].getElementsByTagName("TD")[n].innerText.includes('KB')) {
+                    x *= 1024; // Конвертация КБ в байты
+                } else if (rows[i].getElementsByTagName("TD")[n].innerText.includes('MB')) {
+                    x *= 1024 * 1024; // Конвертация МБ в байты
+                }
+
+                if (rows[i + 1].getElementsByTagName("TD")[n].innerText.includes('KB')) {
+                    y *= 1024; // Конвертация КБ в байты
+                } else if (rows[i + 1].getElementsByTagName("TD")[n].innerText.includes('MB')) {
+                    y *= 1024 * 1024; // Конвертация МБ в байты
+                }
             } else if (n === 3) {
                 x = new Date(rows[i].getElementsByTagName("TD")[n].innerText);
                 y = new Date(rows[i + 1].getElementsByTagName("TD")[n].innerText);
@@ -131,6 +144,7 @@ function sortTable(n) {
                 x = rows[i].getElementsByTagName("TD")[n].innerText.toLowerCase();
                 y = rows[i + 1].getElementsByTagName("TD")[n].innerText.toLowerCase();
             }
+
             if (dir == "asc") {
                 if (x > y) {
                     shouldSwitch = true;

@@ -183,3 +183,8 @@ body{
         bottom: 100%;
     }
 }
+/*header*/
+.header-icon{
+    height: 20px;
+    width: 20px;
+}
