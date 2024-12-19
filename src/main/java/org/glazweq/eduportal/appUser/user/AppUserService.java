@@ -1,8 +1,11 @@
-package org.glazweq.eduportal.appUser;
+package org.glazweq.eduportal.appUser.user;
 
 import lombok.AllArgsConstructor;
+import org.glazweq.eduportal.appUser.teacherSubject.TeacherSubjectRepository;
 import org.glazweq.eduportal.registration.token.ConfirmationToken;
+import org.glazweq.eduportal.registration.token.ConfirmationTokenRepository;
 import org.glazweq.eduportal.registration.token.ConfirmationTokenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,7 +13,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static com.amazonaws.services.ec2.model.PrincipalType.Role;
 
 @Service
 @AllArgsConstructor
@@ -18,7 +25,11 @@ public class AppUserService implements UserDetailsService {
     private final AppUserRepository appUserRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
+
+
     private final static String USER_NOT_FOUND_MSG = "user with email %s not found";
+    @Autowired
+    private TeacherSubjectRepository teacherSubjectRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -110,6 +121,21 @@ public class AppUserService implements UserDetailsService {
     }
 
 
+    public List<AppUser> getAvailableTeachers(Long subjectId) {
+        // Получаем всех пользователей с ролью TEACHER
+        List<AppUser> allTeachers = appUserRepository.findByAppUserRole(AppUserRole.TEACHER);
+
+        // Получаем ID учителей, которые уже назначены на этот предмет
+        List<Integer> assignedTeacherIds = teacherSubjectRepository.findBySubjectId(subjectId)
+                .stream()
+                .map(ts -> ts.getTeacher().getId())
+                .collect(Collectors.toList());
+
+        // Возвращаем только тех учителей, которые еще не назначены на предмет
+        return allTeachers.stream()
+                .filter(teacher -> !assignedTeacherIds.contains(teacher.getId()))
+                .collect(Collectors.toList());
+    }
 
     public int enableAppUser(String email) {
         return appUserRepository.enableAppUser(email);

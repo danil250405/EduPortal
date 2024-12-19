@@ -1,13 +1,10 @@
 package org.glazweq.eduportal.registration;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
-import org.glazweq.eduportal.appUser.AppUserRole;
-import org.glazweq.eduportal.registration.RegistrationService;
-import org.glazweq.eduportal.appUser.AppUser;
-import org.glazweq.eduportal.appUser.AppUserService;
+import org.glazweq.eduportal.appUser.user.AppUserRole;
+import org.glazweq.eduportal.appUser.user.AppUser;
+import org.glazweq.eduportal.appUser.user.AppUserService;
 import org.glazweq.eduportal.registration.token.ConfirmationToken;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;

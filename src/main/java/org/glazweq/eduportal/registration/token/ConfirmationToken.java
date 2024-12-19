@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.glazweq.eduportal.appUser.AppUser;
+import org.glazweq.eduportal.appUser.user.AppUser;
 
 import java.time.LocalDateTime;
 

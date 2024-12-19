@@ -60,6 +60,71 @@
             </tr>
             </tbody>
         </table>
+<!--        Teachers-->
+        <!-- Add this section after the file table but before the file upload form -->
+        <div class="teacher-management-section">
+            <h3 class="mb-4">Subject Teachers</h3>
+
+            <!-- Display current teachers -->
+            <div class="current-teachers mb-4">
+                <h4>Current Teachers</h4>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Teacher Name</th>
+                        <th>Assigned Date</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="teacherSubject : ${subject.teacherSubjects}">
+                        <td th:text="${teacherSubject.teacher.lastName}">Teacher Name</td>
+                        <td th:text="${#temporals.format(teacherSubject.assignedAt, 'dd-MM-yyyy HH:mm')}">Assigned Date</td>
+                        <td>
+                            <div class="delete-teacher-form">
+                            <form th:action="@{/subject/remove-teacher}" method="post" style="display: inline;">
+                                <input type="hidden" name="subjectId" th:value="${subject.id}" />
+                                <input type="hidden" name="teacherId" th:value="${teacherSubject.teacher.id}" />
+                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                            </form>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Add new teacher form -->
+            <div class="add-teacher-form">
+                <h4>Add Teacher</h4>
+                <form th:action="@{/subject/add-teacher}" method="post" class="row g-3">
+                    <input type="hidden" name="subjectId" th:value="${subject.id}" />
+
+                    <div class="col-md-6">
+                        <input type="text"
+                               list="teachersList"
+                               id="teacherSearch"
+                               class="form-control"
+                               placeholder="Начните вводить email учителя..."
+                               required>
+                        <datalist id="teachersList">
+                            <option th:each="teacher : ${availableTeachers}"
+                                    th:value="${teacher.email}"
+                                    th:data-id="${teacher.id}">
+                        </datalist>
+                        <!-- Скрытое поле для хранения ID выбранного учителя -->
+                        <input type="hidden" name="teacherId" id="selectedTeacherId">
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary">Add Teacher</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+<!--        upload files-->
         <div style="display: flex">
             <form class="file-upload-form" method='post' th:action="@{/file/upload}" enctype="multipart/form-data">
                 <input type="hidden" name="MAX_FILE_SIZE" value="5000000">
@@ -105,7 +170,7 @@
         <!--        <div class='message-div message-div_hidden' id='message-div'></div>-->
     </div>
 
-    <!--    confirmation to delete specialty-->
+    <!--    confirmation to delete -->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog"
          aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -150,5 +215,107 @@
             modal.find('#del-coding-file-name').val(codingFileName);
         });
     });
+    document.getElementById('teacherSearch').addEventListener('input', function(e) {
+        const input = e.target;
+        const datalist = document.getElementById('teachersList');
+        const options = datalist.getElementsByTagName('option');
+
+        // Найти выбранный email в списке опций
+        for(let option of options) {
+            if(option.value === input.value) {
+                // Когда нашли совпадение, сохраняем ID в скрытом поле
+                document.getElementById('selectedTeacherId').value = option.getAttribute('data-id');
+                break;
+            }
+        }
+    });
+
+
+    // Обработчик для формы добавления учителя
+    document.querySelector('.add-teacher-form form').addEventListener('submit', function (e) {
+        if (document.getElementById('selectedTeacherId').value) {
+            e.preventDefault();
+
+            const modalId = 'confirmAddModal';
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.id = modalId;
+            modal.innerHTML = `
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Подтверждение добавления</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Вы уверены, что хотите добавить этого учителя?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Нет</button>
+                    <button type="button" class="btn btn-primary" id="confirmAddYes">Да</button>
+                </div>
+            </div>
+        </div>
+        `;
+
+            document.body.appendChild(modal);
+            $(`#${modalId}`).modal('show');
+
+            document.getElementById('confirmAddYes').addEventListener('click', function () {
+                $(`#${modalId}`).modal('hide');
+                e.target.submit();
+            });
+
+            $(`#${modalId}`).on('hidden.bs.modal', function () {
+                $(this).remove();
+            });
+        }
+    });
+
+    // Обработчик для формы удаления учителя
+    document.querySelectorAll('.delete-teacher-form form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const modalId = 'confirmDeleteModalTeacher';
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.id = modalId;
+            modal.innerHTML = `
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Подтверждение удаления</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Вы уверены, что хотите удалить этого учителя?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Нет</button>
+                    <button type="button" class="btn btn-primary" id="confirmDeleteYes">Да</button>
+                </div>
+            </div>
+        </div>
+        `;
+
+            document.body.appendChild(modal);
+            $(`#${modalId}`).modal('show');
+
+            document.getElementById('confirmDeleteYes').addEventListener('click', function () {
+                $(`#${modalId}`).modal('hide');
+                form.submit();
+            });
+
+            $(`#${modalId}`).on('hidden.bs.modal', function () {
+                $(this).remove();
+            });
+        });
+    });
+
 </script>
 </html>

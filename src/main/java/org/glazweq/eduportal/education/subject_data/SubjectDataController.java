@@ -1,6 +1,9 @@
 package org.glazweq.eduportal.education.subject_data;
 
 import lombok.AllArgsConstructor;
+import org.glazweq.eduportal.appUser.teacherSubject.TeacherSubjectService;
+import org.glazweq.eduportal.appUser.user.AppUser;
+import org.glazweq.eduportal.appUser.user.AppUserService;
 import org.glazweq.eduportal.education.subject.Subject;
 import org.glazweq.eduportal.education.subject.SubjectService;
 import org.glazweq.eduportal.storage.StorageService;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -19,6 +23,8 @@ public class SubjectDataController {
     FileMetadataService fileMetadataService;
     SubjectService subjectService;
     StorageService storageService;
+    AppUserService appUserService;
+    TeacherSubjectService teacherSubjectService;
     @GetMapping("/faculties/{facultyAbbr}/{specialtyAbbr}/{subjectAbbr}")
     public String redirectToFacultyPage(@PathVariable("facultyAbbr") String facultyAbbr,
                                         @PathVariable("specialtyAbbr") String specialtyAbbr,
@@ -32,12 +38,48 @@ public class SubjectDataController {
 //        model.addAttribute("pdfFiles", pdfFiles);
 //        model.addAttribute("mp4Files", mp4Files);
         List<FileMetadata> files = fileMetadataService.takeFilesBySubject(subject);
+        List<AppUser> availableTeachers = appUserService.getAvailableTeachers(subject.getId());
+        model.addAttribute("availableTeachers", availableTeachers);
         model.addAttribute("files", files);
         model.addAttribute("subject", subject);
 
         return "subject_data-page";
 
     }
+    @PostMapping("/subject/add-teacher")
+    public String addTeacher(@RequestParam Long subjectId,
+                             @RequestParam Long teacherId,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            teacherSubjectService.assignTeacherToSubject(teacherId, subjectId);
+            redirectAttributes.addFlashAttribute("successMessage", "Teacher successfully assigned");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error assigning teacher: " + e.getMessage());
+        }
+        Subject subject = subjectService.getSubjectById(subjectId);
+        String facultyAbbr = subject.getSpecialty().getFaculty().getAbbreviation();
+        String specialtyAbbr = subject.getSpecialty().getAbbreviation();
+        String subjectAbbr = subject.getAbbreviation();
+        return "redirect:/faculties/" + facultyAbbr + "/" + specialtyAbbr + "/" + subjectAbbr;
+    }
+
+    @PostMapping("/subject/remove-teacher")
+    public String removeTeacher(@RequestParam Long subjectId,
+                                @RequestParam Long teacherId,
+                                RedirectAttributes redirectAttributes) {
+        try {
+            teacherSubjectService.removeTeacherFromSubject(teacherId, subjectId);
+            redirectAttributes.addFlashAttribute("successMessage", "Teacher successfully removed");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error removing teacher: " + e.getMessage());
+        }
+        Subject subject = subjectService.getSubjectById(subjectId);
+        String facultyAbbr = subject.getSpecialty().getFaculty().getAbbreviation();
+        String specialtyAbbr = subject.getSpecialty().getAbbreviation();
+        String subjectAbbr = subject.getAbbreviation();
+        return "redirect:/faculties/" + facultyAbbr + "/" + specialtyAbbr + "/" + subjectAbbr;
+    }
+
     @PostMapping("/file/upload")
     public String uploadFile(@RequestParam("file") MultipartFile[] files,
                              @ModelAttribute("subject-id") Long subjectId,

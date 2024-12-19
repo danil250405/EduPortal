@@ -1,4 +1,4 @@
-package org.glazweq.eduportal.appUser;
+package org.glazweq.eduportal.appUser.user;
 
 public enum AppUserRole {
     USER,

@@ -1,6 +1,8 @@
 package org.glazweq.eduportal.appUser;
 
 
+import org.glazweq.eduportal.appUser.user.AppUser;
+import org.glazweq.eduportal.appUser.user.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;

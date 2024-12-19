@@ -1,6 +1,5 @@
 package org.glazweq.eduportal.registration.token;
 
-import org.glazweq.eduportal.appUser.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

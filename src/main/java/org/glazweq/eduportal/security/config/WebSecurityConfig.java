@@ -1,20 +1,15 @@
 package org.glazweq.eduportal.security.config;
 import lombok.AllArgsConstructor;
-import org.glazweq.eduportal.appUser.AppUserService;
-import org.glazweq.eduportal.security.PasswordEncoder;
+import org.glazweq.eduportal.appUser.user.AppUserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 
@@ -77,7 +72,8 @@ public class WebSecurityConfig  {
                                 .requestMatchers("/subject/add").permitAll()
                                 .requestMatchers("/subject/delete").permitAll()
                                 .requestMatchers("/subjectsAll/delete").permitAll()
-
+                                .requestMatchers("/subject/add-teacher").permitAll()
+                                .requestMatchers("/subject/remove-teacher").permitAll()
                                 .requestMatchers("/file/**").permitAll()
 
                 ).formLogin(

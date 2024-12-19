@@ -1,8 +1,8 @@
 package org.glazweq.eduportal.registration;
 
 import lombok.AllArgsConstructor;
-import org.glazweq.eduportal.appUser.AppUser;
-import org.glazweq.eduportal.appUser.AppUserService;
+import org.glazweq.eduportal.appUser.user.AppUser;
+import org.glazweq.eduportal.appUser.user.AppUserService;
 import org.glazweq.eduportal.registration.email.EmailSender;
 import org.glazweq.eduportal.registration.token.ConfirmationToken;
 import org.glazweq.eduportal.registration.token.ConfirmationTokenRepository;

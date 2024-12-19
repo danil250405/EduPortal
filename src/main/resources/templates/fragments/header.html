@@ -25,11 +25,24 @@
             <li class="nav-item">
                 <a class="nav-link" href="/subjectsAll">Subjects</a>
             </li>
-            <li>
-                <div th:if="${currentUser != null}">
-                    <span th:text="${currentUser.appUserRole}"></span>
-                    <span th:text="${currentUser.email}"></span>
-                    <span th:text="${currentUser.firstName}"></span>
+            <li th:if="${currentUser != null}">
+
+
+                <div th:if="${currentUser.appUserRole.name() == 'USER'}">
+                    <a  href="#">
+                        <img src="../../static/img/student-icn.svg" alt="userLogo" class="header-icon">
+
+                    </a>
+                </div>
+                <div th:if="${currentUser.appUserRole.name() == 'TEACHER'}">
+                    <a  href="#">
+                        <img src="../../static/img/professor-icn.svg" alt="teacherLogo" class="header-icon">
+                    </a>
+                </div>
+                <div th:if="${currentUser.appUserRole.name() == 'ADMIN'}">
+                    <a  href="#">
+                        <img src="../../static/img/admin-icn.svg" alt="adminLogo" class="header-icon">
+                    </a>
                 </div>
             </li>
         </ul>

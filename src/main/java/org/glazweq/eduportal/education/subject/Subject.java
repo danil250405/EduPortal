@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.glazweq.eduportal.education.specialty.Specialty;
 import org.glazweq.eduportal.storage.file_metadata.FileMetadata;
-
+import org.glazweq.eduportal.appUser.teacherSubject.TeacherSubject;
 import java.util.List;
 
 
@@ -29,5 +29,6 @@ public class Subject {
     private Specialty specialty;
     @OneToMany(mappedBy = "subject")
     private List<FileMetadata> filesMetadata;
-
+    @OneToMany(mappedBy = "subject")
+    private List<TeacherSubject> teacherSubjects;
 }
