@@ -65,11 +65,11 @@
 <!--        Teachers-->
         <!-- Add this section after the file table but before the file upload form -->
         <div class="teacher-management-section">
-            <h3 class="mb-4">Subject Teachers</h3>
+
 
             <!-- Display current teachers -->
             <div class="current-teachers mb-4">
-                <h4>Current Teachers</h4>
+                <h4 class="white-color">Current Teachers</h4>
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -104,8 +104,8 @@
 
             <!-- Add new teacher form -->
             <div class="add-teacher-form">
-                <h4>Add Teacher</h4>
-                <form th:action="@{/subject/add-teacher}" method="post" class="row g-3">
+                <h4 class="white-color">Add Teacher</h4>
+                <form th:action="@{/subject/add-teacher}" method="post" class="row g-3" id="addTeacherForm">
                     <input type="hidden" name="subjectId" th:value="${subject.id}" />
 
                     <div class="col-md-6">
@@ -113,19 +113,18 @@
                                list="teachersList"
                                id="teacherSearch"
                                class="form-control"
-                               placeholder="Начните вводить email учителя..."
+                               placeholder="Start typing in the teacher's email..."
                                required>
                         <datalist id="teachersList">
                             <option th:each="teacher : ${availableTeachers}"
                                     th:value="${teacher.email}"
                                     th:data-id="${teacher.id}">
                         </datalist>
-                        <!-- Скрытое поле для хранения ID выбранного учителя -->
                         <input type="hidden" name="teacherId" id="selectedTeacherId">
                     </div>
 
                     <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary">Add Teacher</button>
+                        <button type="submit" class="btn btn-primary">Add teacher</button>
                     </div>
                 </form>
             </div>
@@ -238,19 +237,40 @@
         // Добавляем кнопку подтверждения
         form.append('<button type="submit" class="btn btn-danger">Confirm</button>');
     });
+    document.getElementById('addTeacherForm').addEventListener('submit', function(e) {
+        const teacherId = document.getElementById('selectedTeacherId').value;
+        const teacherSearch = document.getElementById('teacherSearch');
+
+        if (!teacherId) {
+            e.preventDefault(); // Останавливаем отправку формы
+            teacherSearch.setCustomValidity('Пожалуйста, выберите преподавателя из списка');
+            teacherSearch.reportValidity();
+        } else {
+            teacherSearch.setCustomValidity(''); // Сбрасываем сообщение об ошибке
+        }
+    });
 
     document.getElementById('teacherSearch').addEventListener('input', function(e) {
         const input = e.target;
         const datalist = document.getElementById('teachersList');
         const options = datalist.getElementsByTagName('option');
+        let found = false;
 
-        // Найти выбранный email в списке опций
+        // Сбрасываем значение teacherId при начале ввода
+        document.getElementById('selectedTeacherId').value = '';
+
+        // Проверяем, есть ли точное совпадение с одной из опций
         for(let option of options) {
             if(option.value === input.value) {
-                // Когда нашли совпадение, сохраняем ID в скрытом поле
                 document.getElementById('selectedTeacherId').value = option.getAttribute('data-id');
+                found = true;
+                input.setCustomValidity(''); // Сбрасываем сообщение об ошибке
                 break;
             }
+        }
+
+        if(!found) {
+            input.setCustomValidity('Please select a teacher from the list');
         }
     });
 

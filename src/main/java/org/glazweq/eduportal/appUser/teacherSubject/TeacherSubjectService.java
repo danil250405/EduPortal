@@ -22,23 +22,27 @@ public class TeacherSubjectService {
 
     public void assignTeacherToSubject(Long teacherId, Long subjectId) {
         AppUser teacher = appUserRepository.findById(teacherId)
-                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+                .orElseThrow(() -> new TeacherAssignmentException("Teacher not found"));
+
         Subject subject = subjectRepository.findById(subjectId)
-                .orElseThrow(() -> new RuntimeException("Subject not found"));
+                .orElseThrow(() -> new TeacherAssignmentException("Subject not found"));
 
         // Check if assignment already exists
         if (teacherSubjectRepository.existsByTeacherAndSubject(teacher, subject)) {
-            throw new RuntimeException("Teacher is already assigned to this subject");
+            throw new TeacherAssignmentException("This teacher is already assigned to the subject");
         }
 
-        TeacherSubject teacherSubject = new TeacherSubject();
-        teacherSubject.setTeacher(teacher);
-        teacherSubject.setSubject(subject);
-        teacherSubject.setAssignedAt(LocalDateTime.now());
+        try {
+            TeacherSubject teacherSubject = new TeacherSubject();
+            teacherSubject.setTeacher(teacher);
+            teacherSubject.setSubject(subject);
+            teacherSubject.setAssignedAt(LocalDateTime.now());
 
-        teacherSubjectRepository.save(teacherSubject);
+            teacherSubjectRepository.save(teacherSubject);
+        } catch (Exception e) {
+            throw new TeacherAssignmentException("Failed to assign teacher to subject: " + e.getMessage());
+        }
     }
-
     public void removeTeacherFromSubject(Long teacherId, Long subjectId) {
         teacherSubjectRepository.deleteByTeacherIdAndSubjectId(teacherId, subjectId);
     }

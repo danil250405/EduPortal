@@ -1,6 +1,7 @@
 package org.glazweq.eduportal.education.subject_data;
 
 import lombok.AllArgsConstructor;
+import org.glazweq.eduportal.appUser.teacherSubject.TeacherAssignmentException;
 import org.glazweq.eduportal.appUser.teacherSubject.TeacherSubjectService;
 import org.glazweq.eduportal.appUser.user.AppUser;
 import org.glazweq.eduportal.appUser.user.AppUserService;
@@ -48,21 +49,32 @@ public class SubjectDataController {
     }
     @PostMapping("/subject/add-teacher")
     public String addTeacher(@RequestParam Long subjectId,
-                             @RequestParam Long teacherId,
+                             @RequestParam(required = true) Long teacherId,
                              RedirectAttributes redirectAttributes) {
+        if (teacherId == null) {
+            redirectAttributes.addFlashAttribute("infoMessage", "Error: teacher not selected");
+            return getRedirectUrl(subjectId);
+        }
+
         try {
             teacherSubjectService.assignTeacherToSubject(teacherId, subjectId);
-            redirectAttributes.addFlashAttribute("successMessage", "Teacher successfully assigned");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error assigning teacher: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("infoMessage", "Teacher successfully added");
+        } catch (TeacherAssignmentException e) {
+            redirectAttributes.addFlashAttribute("infoMessage", e.getMessage());
         }
+
+        return getRedirectUrl(subjectId);
+    }
+
+    // Выносим формирование URL редиректа в отдельный метод
+    private String getRedirectUrl(Long subjectId) {
         Subject subject = subjectService.getSubjectById(subjectId);
         String facultyAbbr = subject.getSpecialty().getFaculty().getAbbreviation();
         String specialtyAbbr = subject.getSpecialty().getAbbreviation();
         String subjectAbbr = subject.getAbbreviation();
+
         return "redirect:/faculties/" + facultyAbbr + "/" + specialtyAbbr + "/" + subjectAbbr;
     }
-
     @PostMapping("/subject/remove-teacher")
     public String removeTeacher(@RequestParam Long subjectId,
                                 @RequestParam Long teacherId,
