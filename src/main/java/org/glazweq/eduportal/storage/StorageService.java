@@ -237,7 +237,9 @@ public ByteArrayResource getResourceFromS3(String fileName, Subject subject) thr
     // Метод для получения расширения файла
     private String getFileExtension(String fileName) {
         int dotIndex = fileName.lastIndexOf('.');
-        return dotIndex > 0 ? fileName.substring(dotIndex) : "";
+        String ext = dotIndex > 0 ? fileName.substring(dotIndex + 1) : "";
+        System.out.println("file extension ======== " + ext);
+        return ext;
     }
 
     public Path getFilePath(String fileName, Subject subject) {
