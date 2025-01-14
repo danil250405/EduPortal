@@ -10,7 +10,7 @@ spring:
       ddl-auto: update
     show-sql: true
   datasource:
-    url: jdbc:mysql://localhost:3309/EduPortalDB
+    url: jdbc:mysql://localhost:3306/EduPortalDB
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -29,7 +29,7 @@ spring:
             enable: true
 # AWS S3 Configuration
 file:
-  upload-dir: E:/eduPortalStorage/  # Здесь указывается директория для загрузки файлов
+  upload-dir: C:\other\Java\studium\eduPortalStorage  # Здесь указывается директория для загрузки файлов
 cloud:
   aws:
     credentials:
