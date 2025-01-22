@@ -62,6 +62,9 @@ public class WebSecurityConfig  {
                                 .requestMatchers("/faculties/{facultyAbbr}/{specialtyAbbr}").permitAll()
                                 .requestMatchers("/faculties/{facultyAbbr}/{specialtyAbbr}/{subjectAddr}").permitAll()
 
+                                .requestMatchers("/profile").permitAll()
+
+
 //                                TODO: permit only admins
                                 .requestMatchers("/faculties/add").permitAll()
                                 .requestMatchers("/faculties/delete").permitAll()
