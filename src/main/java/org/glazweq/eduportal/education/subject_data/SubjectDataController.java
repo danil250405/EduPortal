@@ -27,7 +27,7 @@ public class SubjectDataController {
     AppUserService appUserService;
     TeacherSubjectService teacherSubjectService;
     @GetMapping("/faculties/{facultyAbbr}/{specialtyAbbr}/{subjectAbbr}")
-    public String redirectToFacultyPage(@PathVariable("facultyAbbr") String facultyAbbr,
+    public String redirectToSubjectPage(@PathVariable("facultyAbbr") String facultyAbbr,
                                         @PathVariable("specialtyAbbr") String specialtyAbbr,
                                         @PathVariable("subjectAbbr") String subjectAbbr,
                                         Model model) {
@@ -39,8 +39,13 @@ public class SubjectDataController {
 //        model.addAttribute("pdfFiles", pdfFiles);
 //        model.addAttribute("mp4Files", mp4Files);
         List<FileMetadata> files = fileMetadataService.takeFilesBySubject(subject);
+        System.out.println(specialtyAbbr + " " + facultyAbbr + " " + subjectAbbr);
+
         List<AppUser> availableTeachers = appUserService.getAvailableTeachers(subject.getId());
-        model.addAttribute("availableTeachers", availableTeachers);
+        if (!availableTeachers.isEmpty()) {
+            model.addAttribute("availableTeachers", availableTeachers);
+        }
+
         model.addAttribute("files", files);
         model.addAttribute("subject", subject);
 
