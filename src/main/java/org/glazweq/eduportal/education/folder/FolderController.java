@@ -1,9 +1,11 @@
 package org.glazweq.eduportal.education.folder;
 
+import org.glazweq.eduportal.exeptions.DuplicateFolderNameException;
 import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -33,18 +35,33 @@ public class FolderController {
         model.addAttribute("newFolder", new Folder());
         return "folder-detail";
     }
-
+//TODO: remove folders
     // Добавление новой папки
     @PostMapping("/add")
-    public String addFolder(@ModelAttribute Folder folder, @RequestParam(required = false) Long parentId) {
-        folderService.createFolder(folder.getName(), folder.getAccess(), parentId);
-        System.out.printf("chuj");
-        return "redirect:/folders/" + folder.getId();
+    public String addFolder(@ModelAttribute Folder folder, @RequestParam(required = false) Long parentId, RedirectAttributes redirectAttributes) {
+        try {
+            folderService.createFolder(folder.getName(), folder.getAccess(), parentId);
+
+        } catch (DuplicateFolderNameException e) {
+            // Add error message for Thymeleaf template
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+
+            System.out.println(e.getMessage());
+            // Return to the form page instead of redirecting
+
+        }
+        if (parentId == null) {
+            return "redirect:/folders";
+        }
+        else return "redirect:/folders/" + parentId;
+
+
     }
 
     // Удаление папки
-    @PostMapping("/delete/{id}")
-    public String deleteFolder(@PathVariable Long id) {
+    @PostMapping("/delete")
+    public String deleteFolder(@RequestParam("folder-id") Long id) {
+
         folderService.deleteFolder(id);
         return "redirect:/folders";
     }

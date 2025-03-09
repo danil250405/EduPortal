@@ -5,7 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.glazweq.eduportal.appUser.user.AppUser;
-import org.glazweq.eduportal.education.subject.Subject;
+import org.glazweq.eduportal.education.subject.Course;
+
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-public class TeacherSubject {
+public class TeacherCourse {
 
 
     @jakarta.persistence.Id
@@ -26,8 +27,8 @@ public class TeacherSubject {
     private AppUser teacher;
 
     @ManyToOne
-    @JoinColumn(name = "subject_id", nullable = false)
-    private Subject subject;
+    @JoinColumn(name = "course_id", nullable = false)
+    private Course course;
 
     @Column(name = "assigned_at")
     private LocalDateTime assignedAt;

@@ -3,7 +3,7 @@ package org.glazweq.eduportal.education.specialty;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.glazweq.eduportal.education.subject.Subject;
+
 import org.glazweq.eduportal.education.faculty.Faculty;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class Specialty {
     @ManyToOne
     @JoinColumn(name = "faculty_id")
     private Faculty faculty;
-    @OneToMany(mappedBy = "specialty")
-    private List<Subject> subjects;
+//    @OneToMany(mappedBy = "specialty")
+//    private List<Subject> subjects;
 
 }

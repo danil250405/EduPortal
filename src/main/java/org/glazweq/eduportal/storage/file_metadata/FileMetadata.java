@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.glazweq.eduportal.education.specialty.Specialty;
-import org.glazweq.eduportal.education.subject.Subject;
+import org.glazweq.eduportal.education.subject.Course;
+
 import java.time.LocalDate;
 
 @Entity
@@ -26,19 +27,19 @@ public class FileMetadata {
     private String extension;
 
     @ManyToOne
-    @JoinColumn(name = "subject_id")
-    private Subject subject;
+    @JoinColumn(name = "course_id")
+    private Course course;
     @Column(nullable = false)
     private Long fileSize;  // размер файла в байтах
     @Column(nullable = false, updatable = false)
     private LocalDate uploadDate;
     @Column(nullable = false)
     private String place;
-    public FileMetadata(String originalFileName, String codingFileName, String extension, Subject subject, Long fileSize, String place) {
+    public FileMetadata(String originalFileName, String codingFileName, String extension, Course course, Long fileSize, String place) {
         this.originalFileName = originalFileName;
         this.codingFileName = codingFileName;
         this.extension = extension;
-        this.subject = subject;
+        this.course = course;
         this.fileSize = fileSize;
         this.place = place;
     }

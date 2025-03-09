@@ -7,6 +7,11 @@ import java.util.List;
 
 @Repository
 public interface FolderRepository extends JpaRepository<Folder, Long> {
+    // Проверка существования папки с таким же именем в указанной родительской папке
+    boolean existsByName(String name);
+
+    // Проверка существования папки с таким же именем в корневой директории
+    boolean existsByNameAndParentFolderIsNull(String name);
     List<Folder> findByParentFolderIsNull();
     List<Folder> findByParentFolderId(Long parentFolder_id);
 }

@@ -3,8 +3,9 @@ package org.glazweq.eduportal.education.subject_data;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.glazweq.eduportal.education.subject.Subject;
-import org.glazweq.eduportal.education.subject.SubjectService;
+import org.glazweq.eduportal.education.course.CourseService;
+import org.glazweq.eduportal.education.subject.Course;
+
 import org.glazweq.eduportal.storage.StorageService;
 import org.glazweq.eduportal.storage.file_metadata.FileMetadata;
 import org.glazweq.eduportal.storage.file_metadata.FileMetadataService;
@@ -28,21 +29,22 @@ import java.io.IOException;
 @Slf4j
 public class DataRestController {
 
-    private SubjectService subjectService;
+
     private StorageService storageService;
+    private CourseService courseService;
     FileMetadataService fileMetadataService;
 
 
     @GetMapping("/download/{fileName}/{subjectId}")
-    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName, @PathVariable Long subjectId) throws IOException {
-        Subject subject = subjectService.getSubjectById(subjectId);
+    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName, @PathVariable Long courseId) throws IOException {
+        Course course = courseService.getCourseById(courseId);
         FileMetadata fileMetadata = fileMetadataService.findFileByCodingName(fileName);
 
         byte[] data;
         if (fileMetadata.getPlace().equals("Amazon")) {
             data = storageService.downloadAmazonFile(fileName);
         } else {
-            data = storageService.downloadLocalFile(fileName, subject);
+            data = storageService.downloadLocalFile(fileName, course);
         }
 
         String originalName = fileMetadata.getOriginalFileName();
@@ -56,19 +58,19 @@ public class DataRestController {
                 .body(resource);
     }
     @GetMapping("/view/{fileName}/{subjectId}")
-    public ResponseEntity<Resource> viewFile(@PathVariable String fileName, @PathVariable Long subjectId) {
+    public ResponseEntity<Resource> viewFile(@PathVariable String fileName, @PathVariable Long courseId) {
         try {
-            Subject subject = subjectService.getSubjectById(subjectId);
+            Course course = courseService.getCourseById(courseId);
             FileMetadata fileMetadata = fileMetadataService.findFileByCodingName(fileName);
 
             Resource resource;
 
             if (fileMetadata.getPlace().equals("Amazon")) {
                 // Для файлов из S3
-                resource = storageService.getResourceFromS3(fileName, subject);
+                resource = storageService.getResourceFromS3(fileName, course);
             } else {
                 // Для локальных файлов (существующая логика)
-                Path filePath = storageService.getFilePath(fileName, subject);
+                Path filePath = storageService.getFilePath(fileName, course);
                 resource = new UrlResource(filePath.toUri());
             }
 

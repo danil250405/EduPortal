@@ -15,6 +15,9 @@
 
 <main>
     <div class="container wrap-box">
+        <div th:if="${errorMessage} != null" class="alert alert-danger" role="alert">
+            <span th:text="${errorMessage}"></span>
+        </div>
         <h3>Folder: <span th:text="${folder.name}"></span></h3>
 
         <div class="mt-3 inputs">
@@ -25,10 +28,13 @@
         <ul class="education-list">
             <li class="education-item" th:each="subfolder : ${subfolders}">
                 <a class="object-link" th:href="@{/folders/{folderId}(folderId=${subfolder.id})}" th:text="${subfolder.name}"></a>
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal"
+                        th:data-folder-id="${subfolder.id}" th:data-folder-name="${subfolder.name}">
+                    Delete
+                </button>
             </li>
         </ul>
 
-        <!-- Форма для добавления папки внутри текущей -->
         <form class="edu-form" th:action="@{/folders/add}" method="post">
             <div class="form-item">
                 <label>Folder name: </label>
@@ -41,6 +47,41 @@
             <input type="hidden" name="parentId" th:value="${folder.id}"/>
             <button class="main-btn" type="submit">Add Folder</button>
         </form>
+
+        <form class="edu-form" th:action="@{/course/add}" method="post">
+            <div class="form-item">
+                <label>course name:</label>
+                <input type="text" id="courseName" name="courseName"/>
+            </div>
+            <input type="hidden" th:value="${folder.id}" id="folderId" name="folderId"/>
+            <button type="submit">Add course</button>
+        </form>
+    </div>
+
+    <!-- Модальное окно подтверждения удаления -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog"
+         aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete the folder "<span id="del-span-folder-name"></span>"?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <form id="deleteForm" th:action="@{/folders/delete}" method="post">
+                        <input type="hidden" id="folder-id" name="folder-id">
+                        <input type="hidden" id="del-folder-name" name="del-folder-name">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </main>
 
@@ -57,6 +98,19 @@
                 const text = item.textContent.toLowerCase();
                 item.style.display = text.includes(searchTerm) ? '' : 'none';
             });
+        });
+
+        // Инициализация модального окна для удаления
+        $('#confirmDeleteModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var folderId = button.data('folder-id');
+            console.log(folderId)
+            var folderName = button.data('folder-name');
+
+            var modal = $(this);
+            modal.find('#folder-id').val(folderId);
+            modal.find('#del-span-folder-name').text(folderName);
+            modal.find('#del-folder-name').val(folderName);
         });
     });
 </script>

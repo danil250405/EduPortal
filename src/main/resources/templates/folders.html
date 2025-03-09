@@ -16,7 +16,11 @@
 <main>
     <div class="container wrap-box">
         <p class="info-msg" th:text="${infoMessage}">Info message</p>
+        <!-- Add this near the top of your form -->
+        <div th:if="${errorMessage} != null" class="alert alert-danger" role="alert">
 
+            <span th:text="${errorMessage}"></span>
+        </div>
         <div class="mt-3 inputs">
             <i class="fa fa-search"></i>
             <input type="text" id="searchInput" class="form-control" placeholder="Search Folder...">
@@ -43,13 +47,6 @@
                 <label>Access: </label>
                 <input required type="text" name="access"/>
             </div>
-            <div class="form-item">
-                <label>Parent Folder: </label>
-                <select name="parentId">
-                    <option value="">No parent</option>
-                    <option th:each="folder : ${folders}" th:value="${folder.id}" th:text="${folder.name}"></option>
-                </select>
-            </div>
             <button class="main-btn" type="submit">Add Folder</button>
         </form>
     </div>
@@ -72,6 +69,7 @@
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <form id="deleteForm" th:action="@{/folders/delete}" method="post">
                         <input type="hidden" id="folder-id" name="folder-id">
+                        <input type="hidden" id="folderId" name="folderId">
                         <input type="hidden" id="del-folder-name" name="del-folder-name">
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>

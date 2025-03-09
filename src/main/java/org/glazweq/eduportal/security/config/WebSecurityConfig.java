@@ -79,6 +79,7 @@ public class WebSecurityConfig  {
                                 .requestMatchers("/subject/remove-teacher").permitAll()
                                 .requestMatchers("/file/**").permitAll()
                                 .requestMatchers("/folders").permitAll()
+                                .requestMatchers("/course/add").permitAll()
                                 .requestMatchers("/**").permitAll()
 
                 ).formLogin(

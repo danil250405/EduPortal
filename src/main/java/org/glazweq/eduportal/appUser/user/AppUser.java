@@ -2,8 +2,11 @@ package org.glazweq.eduportal.appUser.user;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.glazweq.eduportal.appUser.teacherSubject.TeacherSubject;
+import lombok.Setter;
+import org.glazweq.eduportal.appUser.teacherSubject.TeacherCourse;
+import org.glazweq.eduportal.appUser.teacherSubject.TeacherCourse;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +21,8 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
+@Getter
+@Setter
 public class AppUser implements UserDetails {
 
 
@@ -41,7 +46,7 @@ public class AppUser implements UserDetails {
     private AppUserRole appUserRole;
     // В класс AppUser добавьте:
     @OneToMany(mappedBy = "teacher")
-    private List<TeacherSubject> teacherSubjects;
+    private List<TeacherCourse> teacherCourses;
 //    @ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
 //    @JoinTable(
 //            name="user_roles",

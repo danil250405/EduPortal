@@ -1,7 +1,7 @@
 package org.glazweq.eduportal.storage.file_metadata;
 
 import lombok.AllArgsConstructor;
-import org.glazweq.eduportal.education.subject.Subject;
+import org.glazweq.eduportal.education.subject.Course;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,12 +16,12 @@ public class FileMetadataService {
         fileMetadataRepository.save(fileMetadata);
 
     }
-    public List<FileMetadata> takeFilesBySubjectAndExtension(Subject subject, String extension){
+    public List<FileMetadata> takeFilesBySubjectAndExtension(Course course, String extension){
 
-        return fileMetadataRepository.getFileMetadataBySubjectAndExtension(subject, extension);
+        return fileMetadataRepository.getFileMetadataByCourseAndExtension(course, extension);
     }
-    public List<FileMetadata> takeFilesBySubject(Subject subject){
-        return fileMetadataRepository.getFileMetadataBySubject(subject);
+    public List<FileMetadata> takeFilesByCourse(Course course){
+        return fileMetadataRepository.getFileMetadataByCourse(course);
     }
     public FileMetadata findFileByCodingName(String fileCodingName){
         return fileMetadataRepository.getFileMetadataByCodingFileName(fileCodingName);

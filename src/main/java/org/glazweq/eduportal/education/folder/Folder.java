@@ -3,6 +3,7 @@ package org.glazweq.eduportal.education.folder;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.glazweq.eduportal.appUser.user.AppUser;
 import org.glazweq.eduportal.education.specialty.Specialty;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class Folder {
     private String name;
     @Column(nullable = false)
     private String access;
+
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private Folder parentFolder;
@@ -26,4 +28,5 @@ public class Folder {
     // Список вложенных папок
     @OneToMany(mappedBy = "parentFolder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Folder> subFolders = new ArrayList<>();
+
 }

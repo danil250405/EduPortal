@@ -1,5 +1,6 @@
 package org.glazweq.eduportal.education.folder;
 
+import org.glazweq.eduportal.exeptions.DuplicateFolderNameException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,6 +9,7 @@ import java.util.List;
 public class FolderService {
     @Autowired
     private FolderRepository folderRepository;
+
 
     // Получить корневые папки
     public List<Folder> getRootFolders() {
@@ -27,6 +29,11 @@ public class FolderService {
 
     // Создать папку
     public void createFolder(String name, String access, Long parentId) {
+
+        boolean exists = folderRepository.existsByName(name);
+        if (exists) {
+            throw new DuplicateFolderNameException("A folder with the '" + name + "' already exists");
+        }
         Folder folder = new Folder();
         folder.setName(name);
         folder.setAccess(access);

@@ -5,7 +5,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.glazweq.eduportal.education.subject.Subject;
+
+import org.glazweq.eduportal.education.subject.Course;
 import org.glazweq.eduportal.storage.file_metadata.FileMetadata;
 import org.glazweq.eduportal.storage.file_metadata.FileMetadataService;
 
@@ -39,22 +40,22 @@ public class StorageService {
         this.fileMetadataService = fileMetadataService;
     }
 
-    public void uploadFileLocal(MultipartFile file, Subject subject) {
+    public void uploadFileLocal(MultipartFile file, Course course) {
         if (file.isEmpty()) {
             log.error("Failed to upload empty file");
             return;
         }
 
-        log.debug("Uploading file: fileName {}, subject name: {}", file.getOriginalFilename(), subject.getName());
+        log.debug("Uploading file: fileName {}, course name: {}", file.getOriginalFilename(), course.getName());
 
         try {
             String place = "Local";
             String fileName = sanitizeName(UUID.randomUUID().toString() + "_" + file.getOriginalFilename());
 
-            Path uploadPath = createDirectoryStructure(subject).resolve(fileName);
+            Path uploadPath = createDirectoryStructure(course).resolve(fileName);
 
             Files.copy(file.getInputStream(), uploadPath, StandardCopyOption.REPLACE_EXISTING);
-            saveOriginalFileName(file.getOriginalFilename(), fileName, subject, file.getSize(), place);
+            saveOriginalFileName(file.getOriginalFilename(), fileName, course, file.getSize(), place);
 
             log.info("File uploaded successfully: {}", uploadPath);
         } catch (IOException e) {
@@ -62,13 +63,13 @@ public class StorageService {
             throw new RuntimeException("Failed to store file " + file.getOriginalFilename(), e);
         }
     }
-    public void uploadFileAws(MultipartFile file, Subject subject) {
-        log.debug("uploading file to amazon service: fileName {}, subject name: {}", file.getOriginalFilename(), subject.getName());
+    public void uploadFileAws(MultipartFile file, Course course) {
+        log.debug("uploading file to amazon service: fileName {}, subject name: {}", file.getOriginalFilename(), course.getName());
         try {
             String place = "Amazon";
             File fileObject = convertMultiPartFileToFile(file);
             String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            saveOriginalFileName(file.getOriginalFilename(), fileName, subject, file.getSize(), place);
+            saveOriginalFileName(file.getOriginalFilename(), fileName, course, file.getSize(), place);
             s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObject));
             fileObject.delete();
             log.info("File upload successfully: {}", file.getOriginalFilename());
@@ -86,15 +87,14 @@ public class StorageService {
         }
         return convertedFile;
     }
-    private Path createDirectoryStructure(Subject subject) throws IOException {
+    private Path createDirectoryStructure(Course course) throws IOException {
         Path basePath = Paths.get(uploadDir);
-        Path facultyPath = basePath.resolve(sanitizeName(subject.getSpecialty().getFaculty().getName()));
-        Path specialtyPath = facultyPath.resolve(sanitizeName(subject.getSpecialty().getName()));
-        Path subjectPath = specialtyPath.resolve(sanitizeName(subject.getName()));
+        Path coursePath = basePath.resolve(sanitizeName(course.getFolder().getName()));
 
-        Files.createDirectories(subjectPath);
 
-        return subjectPath;
+        Files.createDirectories(coursePath);
+
+        return coursePath;
     }
 
     private String sanitizeName(String name) {
@@ -103,30 +103,24 @@ public class StorageService {
 
 
 
-    private void saveOriginalFileName(String originalFileName, String codingFileName, Subject subject, Long fileSize, String place) {
+    private void saveOriginalFileName(String originalFileName, String codingFileName, Course course, Long fileSize, String place) {
     String fileExtension = getFileExtension(originalFileName);
         log.debug("Saving file metadata for original file name: {}, S3 file name: {}, extension: {}", originalFileName, codingFileName, fileExtension);
 
         try {
-            FileMetadata fileMetadata = new FileMetadata(sanitizeName(originalFileName), codingFileName, fileExtension, subject, fileSize, place);
+            FileMetadata fileMetadata = new FileMetadata(sanitizeName(originalFileName), codingFileName, fileExtension, course, fileSize, place);
             fileMetadataService.saveFileMetadataInDb(fileMetadata);
             log.info("File metadata saved successfully for file: {}", codingFileName);
         } catch (Exception e) {
             log.error("Error saving file metadata for file: {}", codingFileName, e);
         }
     }
-//    public static String getFileExtension(String fileName) {
-//        int dotIndex = fileName.lastIndexOf('.');
-//        if (dotIndex == -1) {
-//            return ""; // Файл не имеет расширения
-//        }
-//        return fileName.substring(dotIndex + 1);
-//    }
 
 
-public byte[] downloadLocalFile(String fileName, Subject subject) throws IOException {
+
+public byte[] downloadLocalFile(String fileName, Course course) throws IOException {
     fileName =sanitizeName(fileName);
-    Path filePath = getFilePath(fileName, subject);
+    Path filePath = getFilePath(fileName, course);
 
     System.out.println(filePath);
     try {
@@ -159,9 +153,9 @@ public byte[] downloadLocalFile(String fileName, Subject subject) throws IOExcep
             throw new RuntimeException("Error reading file content: " + fileName, e);
         }
     }
-public void deleteLocalFile(String fileName, Subject subject) {
+public void deleteLocalFile(String fileName, Course course) {
 
-    Path filePath = getFilePath(fileName, subject);
+    Path filePath = getFilePath(fileName, course);
     System.out.printf(filePath.toString() + "----------");
     try {
         if (Files.deleteIfExists(filePath)) {
@@ -193,25 +187,8 @@ public void deleteLocalFile(String fileName, Subject subject) {
 
         return fileName + " removed ...";
     }
-//    public byte[] viewFile(String fileName, Subject subject) throws IOException {
-//
-//        Path filePath = getFilePath(fileName, subject);
-//
-//        try {
-//            if (!Files.exists(filePath)) {
-//                log.error("File not found: {}", fileName);
-//                throw new IOException("File not found: " + fileName);
-//            }
-//
-//            byte[] fileContent = Files.readAllBytes(filePath);
-//            log.info("File downloaded successfully: {}", fileName);
-//            return fileContent;
-//        } catch (IOException e) {
-//            log.error("Error reading file: {}", fileName, e);
-//            throw new IOException("Error reading file: " + fileName, e);
-//        }
-//    }
-public ByteArrayResource getResourceFromS3(String fileName, Subject subject) throws IOException {
+
+public ByteArrayResource getResourceFromS3(String fileName, Course course) throws IOException {
     try {
         // Получаем объект из S3
         S3Object s3Object = s3Client.getObject(bucketName, fileName);
@@ -242,12 +219,9 @@ public ByteArrayResource getResourceFromS3(String fileName, Subject subject) thr
         return ext;
     }
 
-    public Path getFilePath(String fileName, Subject subject) {
+    public Path getFilePath(String fileName, Course course) {
         return Paths.get(uploadDir)
-                .resolve(sanitizeName(subject.getSpecialty().getFaculty().getName()))
-                .resolve(sanitizeName(subject.getSpecialty().getName()))
-                .resolve(sanitizeName(subject.getName()))
-                .resolve(sanitizeName(fileName));
+                .resolve(sanitizeName(course.getFolder().getName()));
     }
 
     public String getMimeType(String fileName) {

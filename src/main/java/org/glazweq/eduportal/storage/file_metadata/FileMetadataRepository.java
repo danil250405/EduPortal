@@ -1,15 +1,15 @@
 package org.glazweq.eduportal.storage.file_metadata;
 
-import org.glazweq.eduportal.education.subject.Subject;
+import org.glazweq.eduportal.education.subject.Course;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.io.File;
 import java.util.List;
 
 @Repository
 public interface FileMetadataRepository extends JpaRepository<FileMetadata, Long> {
-    List<FileMetadata> getFileMetadataBySubjectAndExtension(Subject subject, String Extension);
-    List<FileMetadata> getFileMetadataBySubject(Subject subject);
+    List<FileMetadata> getFileMetadataByCourseAndExtension(Course course, String Extension);
+    List<FileMetadata> getFileMetadataByCourse(Course course);
     FileMetadata getFileMetadataByCodingFileName(String codingFileName);
 }
