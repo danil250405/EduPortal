@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AuthController {
     AppUserService appUserService;
+
     RegistrationService registrationService;
     @GetMapping("/login")
     public String login() {
