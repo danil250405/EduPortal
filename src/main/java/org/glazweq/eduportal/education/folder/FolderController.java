@@ -60,10 +60,14 @@ public class FolderController {
 
     // Удаление папки
     @PostMapping("/delete")
-    public String deleteFolder(@RequestParam("folder-id") Long id) {
+    public String deleteFolder(@RequestParam("folder-id") Long id, RedirectAttributes redirectAttributes) {
+        Folder folder = folderService.getFolderById(id);
 
-        folderService.deleteFolder(id);
-        return "redirect:/folders";
+        redirectAttributes.addFlashAttribute("infoMessage", folderService.deleteFolder(id));
+        if (folder.getParentFolder() == null) {
+            return "redirect:/folders";
+        }
+        else return "redirect:/folders/" + folder.getParentFolder().getId();
     }
 }
 

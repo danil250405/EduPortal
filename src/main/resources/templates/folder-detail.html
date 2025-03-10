@@ -15,6 +15,7 @@
 
 <main>
     <div class="container wrap-box">
+        <p class="info-msg" th:text="${infoMessage}">Info message</p>
         <div th:if="${errorMessage} != null" class="alert alert-danger" role="alert">
             <span th:text="${errorMessage}"></span>
         </div>

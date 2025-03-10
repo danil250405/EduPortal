@@ -23,8 +23,8 @@ public class FolderService {
 
     // Получить папку по ID
     public Folder getFolderById(Long id) {
-        return folderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Папка не найдена"));
+        System.out.println("11111111111111111 " + id);
+        return folderRepository.findFolderById(id);
     }
 
     // Создать папку
@@ -48,7 +48,13 @@ public class FolderService {
     }
 
     // Удалить папку
-    public void deleteFolder(Long id) {
-        folderRepository.deleteById(id);
+    public String deleteFolder(Long id) {
+        if (folderRepository.existsFolderByParentFolderId(id)) {
+            return "Unable to delete folder. Please delete all contents of the folder first. ";
+        }
+        else{
+            folderRepository.deleteById(id);
+            return  "Folder is deleted successfully";
+        }
     }
 }
