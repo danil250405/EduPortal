@@ -1,5 +1,8 @@
 package org.glazweq.eduportal.education.folder;
 
+import org.glazweq.eduportal.education.course.Course;
+import org.glazweq.eduportal.education.course.CourseService;
+
 import org.glazweq.eduportal.exeptions.DuplicateFolderNameException;
 import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,8 @@ import java.util.List;
 public class FolderController {
     @Autowired
     private FolderService folderService;
+    @Autowired
+    private CourseService courseService;
 
     // Просмотр всех корневых папок
     @GetMapping
@@ -30,12 +35,14 @@ public class FolderController {
         System.out.printf("wwwwwww");
         Folder folder = folderService.getFolderById(folderId);
         List<Folder> subfolders = folderService.getSubfolders(folderId);
+        List<Course> courses = courseService.getCoursesByFolder(folder);
+        model.addAttribute("courses", courses);
         model.addAttribute("folder", folder);
         model.addAttribute("subfolders", subfolders);
         model.addAttribute("newFolder", new Folder());
         return "folder-detail";
     }
-//TODO: remove folders
+//TODO: removing folders
     // Добавление новой папки
     @PostMapping("/add")
     public String addFolder(@ModelAttribute Folder folder, @RequestParam(required = false) Long parentId, RedirectAttributes redirectAttributes) {

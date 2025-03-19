@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import org.glazweq.eduportal.appUser.user.AppUser;
 import org.glazweq.eduportal.appUser.user.AppUserRepository;
 import org.glazweq.eduportal.education.course.CourseRepository;
-import org.glazweq.eduportal.education.subject.Course;
+import org.glazweq.eduportal.education.course.Course;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

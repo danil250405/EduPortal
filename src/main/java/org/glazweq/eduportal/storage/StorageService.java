@@ -6,7 +6,8 @@ import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import org.glazweq.eduportal.education.subject.Course;
+
+import org.glazweq.eduportal.education.course.Course;
 import org.glazweq.eduportal.storage.file_metadata.FileMetadata;
 import org.glazweq.eduportal.storage.file_metadata.FileMetadataService;
 

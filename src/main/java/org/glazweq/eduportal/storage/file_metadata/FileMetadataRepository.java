@@ -1,6 +1,6 @@
 package org.glazweq.eduportal.storage.file_metadata;
 
-import org.glazweq.eduportal.education.subject.Course;
+import org.glazweq.eduportal.education.course.Course;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

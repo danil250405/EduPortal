@@ -1,4 +1,4 @@
-package org.glazweq.eduportal.education.subject;
+package org.glazweq.eduportal.education.course;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,6 +19,8 @@ public class Course {
 
     @Column(nullable = false)
     private String name;
+    @Column
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "folder_id", nullable = false)  // Привязка к папке

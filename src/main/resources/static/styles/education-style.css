@@ -363,3 +363,8 @@
     border-color: #ddd;
 }
 
+
+
+.course-info{
+    display: flex;
+}

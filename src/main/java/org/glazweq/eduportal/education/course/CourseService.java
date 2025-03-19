@@ -3,7 +3,6 @@ package org.glazweq.eduportal.education.course;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.glazweq.eduportal.education.folder.Folder;
-import org.glazweq.eduportal.education.subject.Course;
 
 import org.springframework.stereotype.Service;
 
@@ -36,5 +35,17 @@ public class CourseService {
     public Course getCourseById(Long id) {
         return courseRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("course not found"));
+    }
+    public List<Course> getCourseByFolder(Folder folder) {
+        return courseRepository.findAllByFolder(folder);
+    }
+    public void updateCourse(Long id, Course updatedCourse) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+
+        course.setName(updatedCourse.getName());
+        course.setDescription(updatedCourse.getDescription());
+
+        courseRepository.save(course);
     }
 }

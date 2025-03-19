@@ -1,7 +1,8 @@
 package org.glazweq.eduportal.storage.file_metadata;
 
 import lombok.AllArgsConstructor;
-import org.glazweq.eduportal.education.subject.Course;
+
+import org.glazweq.eduportal.education.course.Course;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

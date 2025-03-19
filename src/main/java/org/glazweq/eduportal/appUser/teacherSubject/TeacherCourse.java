@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.glazweq.eduportal.appUser.user.AppUser;
-import org.glazweq.eduportal.education.subject.Course;
+import org.glazweq.eduportal.education.course.Course;
 
 import org.springframework.data.annotation.Id;
 

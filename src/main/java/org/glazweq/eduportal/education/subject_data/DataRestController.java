@@ -3,8 +3,9 @@ package org.glazweq.eduportal.education.subject_data;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.glazweq.eduportal.education.course.Course;
 import org.glazweq.eduportal.education.course.CourseService;
-import org.glazweq.eduportal.education.subject.Course;
+
 
 import org.glazweq.eduportal.storage.StorageService;
 import org.glazweq.eduportal.storage.file_metadata.FileMetadata;

@@ -1,7 +1,7 @@
 package org.glazweq.eduportal.appUser.teacherSubject;
 
 import org.glazweq.eduportal.appUser.user.AppUser;
-import org.glazweq.eduportal.education.subject.Course;
+import org.glazweq.eduportal.education.course.Course;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
