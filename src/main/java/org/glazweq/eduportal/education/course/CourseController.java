@@ -159,6 +159,7 @@ public class CourseController {
     public String updateCourse(@PathVariable Long id, @ModelAttribute Course course) {
         courseService.updateCourse(id, course);
         Course course1 = courseService.getCourseById(course.getId());
+
         return "redirect:/folders/" + course1.getFolder().getId() + "/course/" + course1.getId(); // Перенаправляем обратно на страницу курса
     }
 

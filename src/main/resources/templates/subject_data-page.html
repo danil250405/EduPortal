@@ -21,16 +21,29 @@
 
 <main>
     <div class="container wrap-box">
-        <p class="info-msg" th:text="${infoMessage}">Info message</p>
         <div>
-            <label>Course name:</label>
-            <input type="text" id="courseName" th:value="${course.name}" readonly />
-
-            <label>Description:</label>
-            <textarea id="courseDescription" readonly>[[${course.description}]]</textarea>
-
-            <button id="editButton" onclick="toggleEdit()">Change</button>
+        <p class="info-msg" th:text="${infoMessage}">Info message</p>
+        <div class="field-container">
+            <label class="field-label">Course name:</label>
+            <input type="text" id="courseName" th:value="${course.name}" readonly class="editable-field" />
         </div>
+
+        <div class="field-container">
+            <label class="field-label">Description:</label>
+            <textarea id="courseDescription" th:text="${course.description}" readonly class="editable-field"></textarea>
+        </div>
+
+        <div class="button-group">
+            <button id="editButton" onclick="toggleEdit()">Change</button>
+            <button id="saveButton" onclick="saveChanges()" style="display: none;">Save</button>
+        </div>
+
+        <form id="updateForm" th:action="@{/updateCourse/{id}(id=${course.id})}" method="post" style="display: none;">
+            <input type="hidden" name="name" id="nameField" />
+            <input type="hidden" name="description" id="descriptionField" />
+        </form>
+    </div>
+
 
         <table class="table table-striped table-hover" id="fileTable">
             <thead>
@@ -73,72 +86,72 @@
             </tbody>
         </table>
 <!--        Teachers-->
-        <!-- Add this section after the file table but before the file upload form -->
-<!--        <div class="teacher-management-section">-->
+
+        <div class="teacher-management-section">
 
 
-<!--            &lt;!&ndash; Display current teachers &ndash;&gt;-->
-<!--            <div class="current-teachers mb-4">-->
-<!--                <h4 class="white-color">Current Teachers</h4>-->
-<!--                <table class="table table-striped">-->
-<!--                    <thead>-->
-<!--                    <tr>-->
-<!--                        <th>Teacher Name</th>-->
-<!--                        <th>Assigned Date</th>-->
-<!--                        <th>Actions</th>-->
-<!--                    </tr>-->
-<!--                    </thead>-->
-<!--                    <tbody>-->
-<!--                    <tr th:each="teachercourse : ${course.teachercourses}">-->
-<!--                        <td th:text="${teachercourse.teacher.lastName}">Teacher Name</td>-->
-<!--                        <td th:text="${#temporals.format(teachercourse.assignedAt, 'dd-MM-yyyy HH:mm')}">Assigned Date</td>-->
-<!--                        <td>-->
-<!--                            <div class="delete-teacher-form">-->
-<!--                            <form th:action="@{/course/remove-teacher}" method="post" style="display: inline;">-->
-<!--                                <input type="hidden" name="courseId" th:value="${course.id}" />-->
-<!--                                <input type="hidden" name="teacherId" th:value="${teachercourse.teacher.id}" />-->
-<!--                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal"-->
-<!--                                        data-context="teacher"-->
-<!--                                        th:data-entity-id="${teachercourse.teacher.id}"-->
-<!--                                        th:data-message="'Are you sure you want to remove this teacher?'">-->
-<!--                                    Remove-->
-<!--                                </button>-->
+            <!-- Display current teachers -->
+            <div class="current-teachers mb-4">
+                <h4 class="white-color">Current Teachers</h4>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Teacher Name</th>
+                        <th>Assigned Date</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="teachercourse : ${course.teacherCourses}">
+                        <td th:text="${teachercourse.teacher.lastName}">Teacher Name</td>
+                        <td th:text="${#temporals.format(teachercourse.assignedAt, 'dd-MM-yyyy HH:mm')}">Assigned Date</td>
+                        <td>
+                            <div class="delete-teacher-form">
+                            <form th:action="@{/course/remove-teacher}" method="post" style="display: inline;">
+                                <input type="hidden" name="courseId" th:value="${course.id}" />
+                                <input type="hidden" name="teacherId" th:value="${teachercourse.teacher.id}" />
+                                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirmDeleteModal"
+                                        data-context="teacher"
+                                        th:data-entity-id="${teachercourse.teacher.id}"
+                                        th:data-message="'Are you sure you want to remove this teacher?'">
+                                    Remove
+                                </button>
 
-<!--                            </form>-->
-<!--                            </div>-->
-<!--                        </td>-->
-<!--                    </tr>-->
-<!--                    </tbody>-->
-<!--                </table>-->
-<!--            </div>-->
+                            </form>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
 
-<!--            &lt;!&ndash; Add new teacher form &ndash;&gt;-->
-<!--            <div class="add-teacher-form">-->
-<!--                <h4 class="white-color">Add Teacher</h4>-->
-<!--                <form th:action="@{/course/add-teacher}" method="post" class="row g-3" id="addTeacherForm">-->
-<!--                    <input type="hidden" name="courseId" th:value="${course.id}" />-->
+            <!-- Add new teacher form -->
+            <div class="add-teacher-form">
+                <h4 class="white-color">Add Teacher</h4>
+                <form th:action="@{/course/add-teacher}" method="post" class="row g-3" id="addTeacherForm">
+                    <input type="hidden" name="courseId" th:value="${course.id}" />
 
-<!--                    <div class="col-md-6">-->
-<!--                        <input type="text"-->
-<!--                               list="teachersList"-->
-<!--                               id="teacherSearch"-->
-<!--                               class="form-control"-->
-<!--                               placeholder="Start typing in the teacher's email..."-->
-<!--                               required>-->
-<!--                        <datalist id="teachersList">-->
-<!--                            <option th:each="teacher : ${availableTeachers}"-->
-<!--                                    th:value="${teacher.email}"-->
-<!--                                    th:data-id="${teacher.id}">-->
-<!--                        </datalist>-->
-<!--                        <input type="hidden" name="teacherId" id="selectedTeacherId">-->
-<!--                    </div>-->
+                    <div class="col-md-6">
+                        <input type="text"
+                               list="teachersList"
+                               id="teacherSearch"
+                               class="form-control"
+                               placeholder="Start typing in the teacher's email..."
+                               required>
+                        <datalist id="teachersList">
+                            <option th:each="teacher : ${availableTeachers}"
+                                    th:value="${teacher.email}"
+                                    th:data-id="${teacher.id}">
+                        </datalist>
+                        <input type="hidden" name="teacherId" id="selectedTeacherId">
+                    </div>
 
-<!--                    <div class="col-md-2">-->
-<!--                        <button type="submit" class="btn btn-primary">Add teacher</button>-->
-<!--                    </div>-->
-<!--                </form>-->
-<!--            </div>-->
-<!--        </div>-->
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary">Add teacher</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
 
 <!--        upload files-->
@@ -284,7 +297,50 @@
         }
     });
 
+    function toggleEdit() {
+        const nameInput = document.getElementById('courseName');
+        const descriptionTextarea = document.getElementById('courseDescription');
+        const editButton = document.getElementById('editButton');
+        const saveButton = document.getElementById('saveButton');
 
+        // Если поля только для чтения, то включаем редактирование
+        if (nameInput.readOnly) {
+            nameInput.readOnly = false;
+            descriptionTextarea.readOnly = false;
+            editButton.textContent = 'Cancel';
+            saveButton.style.display = 'inline-block';
+
+            // Устанавливаем высоту textarea в зависимости от содержимого
+            descriptionTextarea.style.height = 'auto';
+            descriptionTextarea.style.height = descriptionTextarea.scrollHeight + 'px';
+        } else {
+            // Иначе возвращаем в режим только для чтения
+            nameInput.readOnly = true;
+            descriptionTextarea.readOnly = true;
+            editButton.textContent = 'Change';
+            saveButton.style.display = 'none';
+        }
+    }
+
+    function saveChanges() {
+        // Получаем значения из полей ввода
+        const nameInput = document.getElementById('courseName');
+        const descriptionTextarea = document.getElementById('courseDescription');
+
+        // Устанавливаем значения в скрытые поля формы
+        document.getElementById('nameField').value = nameInput.value;
+        document.getElementById('descriptionField').value = descriptionTextarea.value;
+
+        // Отправляем форму
+        document.getElementById('updateForm').submit();
+    }
+
+    // Автоматически подстраиваем высоту textarea под содержимое при загрузке страницы
+    window.addEventListener('DOMContentLoaded', function() {
+        const descriptionTextarea = document.getElementById('courseDescription');
+        descriptionTextarea.style.height = 'auto';
+        descriptionTextarea.style.height = descriptionTextarea.scrollHeight + 'px';
+    });
 
 
 </script>
