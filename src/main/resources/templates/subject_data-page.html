@@ -245,11 +245,9 @@
         if (context === 'file') {
             var form = modal.find('form');
             form.attr('action', '/file/delete');
-            // Очищаем форму от предыдущих полей
             form.empty();
-            // Добавляем поля с правильными именами как в контроллере
             form.append('<input type="hidden" name="del-coding-file-name" value="' + entityId + '">');
-            form.append('<input type="hidden" name="del-course-id" value="' + $('#course-id').val() + '">');
+            form.append('<input type="hidden" name="del-course-id" value="' + $('#course-id').val() + '">'); // Исправлено имя поля
         } else if (context === 'teacher') {
             var form = modal.find('form');
             form.attr('action', '/course/remove-teacher');
@@ -257,7 +255,6 @@
             form.append('<input type="hidden" name="teacherId" value="' + entityId + '">');
             form.append('<input type="hidden" name="courseId" value="' + $('#course-id').val() + '">');
         }
-        // Добавляем кнопку подтверждения
         form.append('<button type="submit" class="btn btn-danger">Confirm</button>');
     });
     document.getElementById('addTeacherForm').addEventListener('submit', function(e) {

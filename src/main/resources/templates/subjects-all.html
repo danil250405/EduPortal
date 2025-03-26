@@ -28,86 +28,36 @@
         </div>
         <p class="info-msg" th:text="${infoMessage}">Info message</p>
         <ul class="education-list">
-            <li class="education-item" th:each="subject : ${subjects}">
-                <a  class="object-link" th:href="@{/faculties/{facultyAbbr}/{specialtyAbbr}/{subjectAbbr}
-                                                    (facultyAbbr=${subject.specialty.faculty.abbreviation},
-                                                    specialtyAbbr=${subject.specialty.abbreviation},
-                                                    subjectAbbr=${subject.abbreviation})}">
-                    <span th:text="${subject.getSpecialty().getFaculty().getAbbreviation()}">faculty abbreviation</span>
-                    <span> - </span>
-
-                    <span th:text="${subject.getSpecialty().getAbbreviation()}">specialty abbreviation</span>
-                    <span> - </span>
-                    <span th:text="${subject.name}">subject name</span>
-                    <span th:text="${subject.abbreviation}">subject abbreviation</span>
-
+            <li class="education-item" th:each="course : ${courses}">
+                <div>
+                <svg width="30px" height="30px" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g data-name="20_Online Learnning" id="_20_Online_Learnning"><path d="M59,49H5a1,1,0,0,1-1-1V8A1,1,0,0,1,5,7H59a1,1,0,0,1,1,1V48A1,1,0,0,1,59,49Z" style="fill:#0455bf"/><path d="M46,47A40,40,0,0,1,6,7H5A1,1,0,0,0,4,8V48a1,1,0,0,0,1,1H59a1,1,0,0,0,1-1V47Z" style="fill:#004787"/><path d="M55,45H9a1,1,0,0,1-1-1V12a1,1,0,0,1,1-1H55a1,1,0,0,1,1,1V44A1,1,0,0,1,55,45Z" style="fill:#fdfeff"/><path d="M42,43A32,32,0,0,1,10,11H9a1,1,0,0,0-1,1V44a1,1,0,0,0,1,1H55a1,1,0,0,0,1-1V43Z" style="fill:#dfeaef"/><rect height="14" style="fill:#0455bf" width="2" x="45" y="22"/><rect height="14" style="fill:#004787" width="1" x="45" y="23"/><path d="M48,43H44a1,1,0,0,1-1-1V35a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1v7A1,1,0,0,1,48,43Z" style="fill:#f74e0c"/><path d="M46,41a1,1,0,0,1-1-1V34H44a1,1,0,0,0-1,1v7a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V41Z" style="fill:#cc2600"/><path d="M41,24H21v9a1,1,0,0,0,.311.724,15.5,15.5,0,0,0,21.378,0A1,1,0,0,0,43,33V24Z" style="fill:#0455bf"/><path d="M41,24H21v9a1,1,0,0,0,.311.724,15.5,15.5,0,0,0,21.378,0A1,1,0,0,0,43,33V24Z" style="fill:#0455bf"/><path d="M43,23H21v2.765L30.861,29.8a3,3,0,0,0,2.274,0L43,25.765V23Z" style="fill:#004787"/><path d="M32,29.021a.988.988,0,0,1-.378-.075L16.9,22.926a1,1,0,0,1,0-1.852l14.727-6.02a.99.99,0,0,1,.756,0l14.727,6.02a1,1,0,0,1,0,1.852l-14.727,6.02A.988.988,0,0,1,32,29.021Z" style="fill:#0455bf"/><path d="M53,57H11a9.01,9.01,0,0,1-9-9,1,1,0,0,1,1-1H61a1,1,0,0,1,1,1A9.01,9.01,0,0,1,53,57Z" style="fill:#0455bf"/><path d="M55,55H13a9.01,9.01,0,0,1-8.941-8H3a1,1,0,0,0-1,1,9.01,9.01,0,0,0,9,9H53a8.984,8.984,0,0,0,7.276-3.724A8.942,8.942,0,0,1,55,55Z" style="fill:#004787"/><polygon points="39 50 25 50 23 47 41 47 39 50" style="fill:#febc00"/><path d="M24.667,47H23l2,3H39l.667-1H28.4A4.492,4.492,0,0,1,24.667,47Z" style="fill:#edaa03"/></g></svg>
+                <a  class="object-link"  th:href="@{/folders/{folderId}/course/{courseId}(folderId=${course.folder.id}, courseId=${course.id})}"  th:text="${course.name}">
                 </a>
-                <button type="button" class="btn btn-danger" data-toggle="modal"
-                        data-target="#confirmDeleteModal"
-                        th:data-subject-id="${subject.id}" th:data-subject-name="${subject.name}"
-                        th:data-subject-specialty-id="${subject.specialty.id}">
-                    Delete
-                </button>
+                </div>
             </li>
         </ul>
     </div>
-    <!--    confirmation to delete subject-->
-    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog"
-         aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Delete</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete the subject "<span id="del-span-subject-name"></span>"?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <form id="deleteForm" th:action="@{/subjectsAll/delete}" method="post">
-                        <input type="hidden" id="subject-id" name="subject-id">
-                        <input type="hidden" id="del-subject-name" name="del-subject-name">
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!--    confirmation to delete course-->
+
 </main>
 
 </body>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('searchInput');
-        const educationList = document.querySelector('.education-list');
-        const educationItems = educationList.querySelectorAll('.education-item');
+        const folderList = document.querySelector('.education-list');
+        const folderItems = folderList.querySelectorAll('.education-item');
 
-        searchInput.addEventListener('input', function() {
+
+        searchInput.addEventListener('input', function () {
             const searchTerm = this.value.toLowerCase().trim();
 
-            educationItems.forEach(item => {
+            // Поиск по папкам
+            folderItems.forEach(item => {
                 const text = item.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    item.style.display = '';
-                } else {
-                    item.style.display = 'none';
-                }
+                item.style.display = text.includes(searchTerm) ? '' : 'none';
             });
-        });
 
-        // Код для модального окна удаления
-        $('#confirmDeleteModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget);
-            var subjectId = button.data('subject-id');
-            var subjectName = button.data('subject-name');
-
-            var modal = $(this);
-            modal.find('#subject-id').val(subjectId);
-            modal.find('#del-span-subject-name').text(subjectName);
-            modal.find('#del-subject-name').val(subjectName);
         });
     });
 </script>

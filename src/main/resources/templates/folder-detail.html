@@ -103,14 +103,25 @@
         const searchInput = document.getElementById('searchInput');
         const folderList = document.querySelector('.education-list');
         const folderItems = folderList.querySelectorAll('.education-item');
+        const courseList = document.querySelectorAll('.education-list')[1]; // Получаем второй список (курсы)
+        const courseItems = courseList.querySelectorAll('.education-item');
 
         searchInput.addEventListener('input', function () {
             const searchTerm = this.value.toLowerCase().trim();
+
+            // Поиск по папкам
             folderItems.forEach(item => {
                 const text = item.textContent.toLowerCase();
                 item.style.display = text.includes(searchTerm) ? '' : 'none';
             });
+
+            // Поиск по курсам
+            courseItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
         });
+
 
         // Инициализация модального окна для удаления
         $('#confirmDeleteModal').on('show.bs.modal', function (event) {

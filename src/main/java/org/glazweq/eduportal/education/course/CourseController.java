@@ -56,7 +56,12 @@ public class CourseController {
     }
 
 
-
+        @GetMapping("/coursesAll")
+    public String showCoursesPage(Model model) {
+        List<Course> courses = courseService.getAllCourses();
+        model.addAttribute("courses", courses);
+        return "subjects-all";
+    }
     @GetMapping("/folders/{folderId}/course/{courseId}")
     public String redirectToSubjectPage(@PathVariable("courseId") Long courseId,
                                         @PathVariable("folderId") Long folderId,
@@ -106,7 +111,7 @@ public class CourseController {
         Long folderId = course.getFolder().getId();
 
 
-        return "redirect:/folders/" + folderId + "/" + courseId ;
+        return "redirect:/folders/" + folderId + "/course/" + courseId ;
     }
     @PostMapping("/course/remove-teacher")
     public String removeTeacher(@RequestParam Long courseId,
@@ -139,19 +144,23 @@ public class CourseController {
             }
         }
 
-        return "redirect:/folders/" + course.getFolder().getId() + "/" + courseId;
+        return "redirect:/folders/" + course.getFolder().getId() + "/course/" + courseId;
     }
     @PostMapping("/file/delete")
-    public String deleteFile(@ModelAttribute("del-coding-file-name") String fileName,
-                             @ModelAttribute("del-subject-id") Long courseId) {
+    public String deleteFile(
+            @RequestParam("del-coding-file-name") String codingFileName,
+            @RequestParam("del-course-id") Long courseId // Исправлено имя параметра
+    ) {
         System.out.println("in delete method");
         Course course = courseService.getCourseById(courseId);
-        FileMetadata fileMetadata = fileMetadataService.findFileByCodingName(fileName);
-        if (fileMetadata.getPlace().equals("Local")) storageService.deleteLocalFile(fileName, course);
-        else if (fileMetadata.getPlace().equals("Amazon")) storageService.deleteAmazonFile(fileName);
+        FileMetadata fileMetadata = fileMetadataService.findFileByCodingName(codingFileName); // codingFileName вместо fileName
+        if (fileMetadata.getPlace().equals("Local")) {
+            storageService.deleteLocalFile(codingFileName, course); // codingFileName вместо fileName
+        } else if (fileMetadata.getPlace().equals("Amazon")) {
+            storageService.deleteAmazonFile(codingFileName); // codingFileName вместо fileName
+        }
 
-        return "redirect:/folders/" + course.getFolder().getId() + "/" + courseId;
-
+        return "redirect:/folders/" + course.getFolder().getId() + "/course/" + courseId;
     }
 
 

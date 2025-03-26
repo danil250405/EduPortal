@@ -36,7 +36,7 @@ public class DataRestController {
     FileMetadataService fileMetadataService;
 
 
-    @GetMapping("/download/{fileName}/{subjectId}")
+    @GetMapping("/download/{fileName}/{courseId}")
     public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName, @PathVariable Long courseId) throws IOException {
         Course course = courseService.getCourseById(courseId);
         FileMetadata fileMetadata = fileMetadataService.findFileByCodingName(fileName);
@@ -58,7 +58,7 @@ public class DataRestController {
                 .header("Content-disposition", "attachment; filename=\"" + originalName + "\"")
                 .body(resource);
     }
-    @GetMapping("/view/{fileName}/{subjectId}")
+    @GetMapping("/view/{fileName}/{courseId}")
     public ResponseEntity<Resource> viewFile(@PathVariable String fileName, @PathVariable Long courseId) {
         try {
             Course course = courseService.getCourseById(courseId);
