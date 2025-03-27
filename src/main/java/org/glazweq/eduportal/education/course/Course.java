@@ -7,6 +7,8 @@ import org.glazweq.eduportal.storage.file_metadata.FileMetadata;
 import org.glazweq.eduportal.appUser.teacherSubject.TeacherCourse;
 import org.glazweq.eduportal.education.folder.Folder;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -21,6 +23,8 @@ public class Course {
     private String name;
     @Column
     private String description;
+    @Column
+    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "folder_id", nullable = false)  // Привязка к папке
@@ -31,4 +35,9 @@ public class Course {
 
     @OneToMany(mappedBy = "course")
     private List<TeacherCourse> teacherCourses;
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();  // Устанавливаем текущую дату и время при создании записи
+    }
+
 }

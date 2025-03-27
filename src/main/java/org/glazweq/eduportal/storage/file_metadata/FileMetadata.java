@@ -7,6 +7,7 @@ import org.glazweq.eduportal.education.course.Course;
 import org.glazweq.eduportal.education.specialty.Specialty;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -32,7 +33,7 @@ public class FileMetadata {
     @Column(nullable = false)
     private Long fileSize;  // размер файла в байтах
     @Column(nullable = false, updatable = false)
-    private LocalDate uploadDate;
+    private LocalDateTime uploadDate;
     @Column(nullable = false)
     private String place;
     public FileMetadata(String originalFileName, String codingFileName, String extension, Course course, Long fileSize, String place) {
@@ -49,6 +50,6 @@ public class FileMetadata {
 
     @PrePersist
     protected void onCreate() {
-        this.uploadDate = LocalDate.now();  // Устанавливаем текущую дату при создании записи
+        this.uploadDate = LocalDateTime.now();  // Устанавливаем текущую дату при создании записи
     }
 }

@@ -72,12 +72,12 @@ function checkFileSize(files) {
         const file = files[i];
         if (file.size > maxFileSizeBytes) {
             fileSizeValid = false;
-            messageText += `Файл "${file.name}" превышает максимально допустимый размер (${maxFileSizeBytes / 1024 / 1024} МБ)\n`;
+            messageText += `file "${file.name}" exceeds the maximum allowed size (${maxFileSizeBytes / 1024 / 1024} МБ)\n`;
         }
     }
 
     if (fileSizeValid) {
-        messageDivElement.textContent = 'Все файлы имеют допустимый размер';
+        messageDivElement.textContent = 'All files are of acceptable size.';
         submitButton.disabled = false; // Разрешить кнопку отправки
     } else {
         messageDivElement.textContent = messageText;
@@ -138,9 +138,11 @@ function sortTable(n) {
                     y *= 1024 * 1024; // Конвертация МБ в байты
                 }
             } else if (n === 3) {
-                x = new Date(rows[i].getElementsByTagName("TD")[n].innerText);
-                y = new Date(rows[i + 1].getElementsByTagName("TD")[n].innerText);
-            } else {
+                // Обработка даты и времени
+                x = parseDateString(rows[i].getElementsByTagName("TD")[n].innerText);
+                y = parseDateString(rows[i + 1].getElementsByTagName("TD")[n].innerText);
+            }
+            else {
                 x = rows[i].getElementsByTagName("TD")[n].innerText.toLowerCase();
                 y = rows[i + 1].getElementsByTagName("TD")[n].innerText.toLowerCase();
             }
@@ -175,3 +177,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Helper function to parse date strings, handling different formats
+function parseDateString(dateString) {
+    // Attempt to parse using different formats
+    let parsedDate = new Date(dateString); // Try default Date parsing first
+
+    // If default parsing fails, try parsing with a specific format
+    if (isNaN(parsedDate.getTime())) {
+        // Example: dd-MM-yyyy HH:mm:ss or dd-MM-yyyy HH:mm
+        const parts = dateString.split(/[- :]/);
+        if (parts.length >= 5) {
+            const day = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+            const year = parseInt(parts[2], 10);
+            const hour = parseInt(parts[3], 10);
+            const minute = parseInt(parts[4], 10);
+            const second = parts.length > 5 ? parseInt(parts[5], 10) : 0; // Optional seconds
+            parsedDate = new Date(year, month, day, hour, minute, second);
+        }
+    }
+
+    // If parsing still fails, return an invalid date
+    if (isNaN(parsedDate.getTime())) {
+        console.warn("Could not parse date:", dateString);
+        return new Date(NaN); // Return an invalid date
+    }
+
+    return parsedDate;
+}

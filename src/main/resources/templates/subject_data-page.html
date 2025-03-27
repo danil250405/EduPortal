@@ -67,7 +67,7 @@
                 <td th:text="${file.fileSize >= 1024 * 1024 ?
                     #numbers.formatDecimal(file.fileSize / 1024 / 1024, 1, 2) + ' MB' :
                     #numbers.formatDecimal(file.fileSize / 1024, 1, 2) + ' KB'}">Size</td>
-                <td th:text="${file.uploadDate}">Upload Date</td>
+                <td th:text="${#temporals.format(file.uploadDate, 'dd-MM-yyyy HH:mm')}">Upload Date</td>
                 <td th:text="${file.place}">Place</td>
 
                 <td>
@@ -240,7 +240,7 @@
         var message = button.data('message');
 
         var modal = $(this);
-        modal.find('#modalMessage').text(message);
+        modal.find('#modalMessage').text(message);``
 
         if (context === 'file') {
             var form = modal.find('form');
