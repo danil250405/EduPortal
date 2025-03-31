@@ -404,3 +404,12 @@
     display: block;
     margin-bottom: 5px;
 }
+
+
+
+.profile-section{
+    background-color: #6c6c6c;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}

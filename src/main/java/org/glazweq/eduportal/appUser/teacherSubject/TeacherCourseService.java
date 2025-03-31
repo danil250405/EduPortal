@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -19,6 +20,10 @@ public class TeacherCourseService {
     private AppUserRepository appUserRepository;
     @Autowired
     private CourseRepository courseRepository;
+
+    public List<TeacherCourse> getCoursesAssignedToUser(Long teacherId) {
+        return teacherCourseRepository.findTeacherCoursesByTeacherId(teacherId);
+    }
 
     public void assignTeacherToSubject(Long teacherId, Long courseId) {
         AppUser teacher = appUserRepository.findById(teacherId)

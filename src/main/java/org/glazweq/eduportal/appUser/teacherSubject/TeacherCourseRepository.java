@@ -12,5 +12,7 @@ public interface TeacherCourseRepository extends JpaRepository<TeacherCourse, Lo
     List<TeacherCourse> findByCourseId(Long courseId);
     boolean existsByTeacherAndCourse(AppUser teacher, Course course);
     void deleteByTeacherIdAndCourseId(Long teacherId, Long courseId);
+//    List<Course> findTeacherCoursesByTeacherId(int teacher_id);
+    List<TeacherCourse> findTeacherCoursesByTeacherId(Long teacherId);
 }
 

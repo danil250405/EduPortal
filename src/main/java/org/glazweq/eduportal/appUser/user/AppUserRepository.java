@@ -1,6 +1,8 @@
 package org.glazweq.eduportal.appUser.user;
 
 
+import org.glazweq.eduportal.appUser.teacherSubject.TeacherCourse;
+import org.glazweq.eduportal.education.course.Course;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,4 +25,5 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     int enableAppUser(String email);
 
     List<AppUser> findByAppUserRole(AppUserRole role);
+//    List<TeacherCourse> getCoursesAssignedToUser(AppUser user);
 }
