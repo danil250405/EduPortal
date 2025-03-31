@@ -22,6 +22,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // Add event listeners for sorting
     const headers = document.querySelectorAll('#courseTable th.sortable');
     headers.forEach(header => {
+        // Добавляем иконку для сортировки
+        const icon = document.createElement('span');
+        icon.classList.add('sort-icon');
+        icon.innerHTML = ' ↕️';
+        header.appendChild(icon);
+
         header.addEventListener('click', function() {
             const n = parseInt(this.getAttribute('data-sort'));
             sortTable(n);
@@ -41,13 +47,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     dir = "desc";
                     headers[i].classList.remove("asc");
                     headers[i].classList.add("desc");
+                    // Обновляем иконку
+                    headers[i].querySelector('.sort-icon').innerHTML = ' ↓';
                 } else {
                     dir = "asc";
                     headers[i].classList.remove("desc");
                     headers[i].classList.add("asc");
+                    // Обновляем иконку
+                    headers[i].querySelector('.sort-icon').innerHTML = ' ↑';
                 }
             } else {
                 headers[i].classList.remove("asc", "desc"); // Remove from other headers
+                // Сбрасываем иконку для других заголовков
+                if (headers[i].querySelector('.sort-icon')) {
+                    headers[i].querySelector('.sort-icon').innerHTML = ' ↕️';
+                }
             }
         }
 

@@ -133,7 +133,12 @@ public class AppUserService implements UserDetailsService {
                 .filter(teacher -> !assignedTeacherIds.contains(teacher.getId()))
                 .collect(Collectors.toList());
     }
-
+    public List<AppUser> getAllTeachers() {
+       return appUserRepository.findByAppUserRole(AppUserRole.TEACHER);
+    }
+    public  AppUser getUserById(Long id) {
+        return appUserRepository.findById(id).orElse(null);
+    }
     public int enableAppUser(String email) {
         return appUserRepository.enableAppUser(email);
     }
