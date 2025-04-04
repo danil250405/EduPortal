@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 import org.glazweq.eduportal.education.course.Course;
+import org.glazweq.eduportal.education.folder.Folder;
 import org.glazweq.eduportal.storage.file_metadata.FileMetadata;
 import org.glazweq.eduportal.storage.file_metadata.FileMetadataService;
 
@@ -90,12 +91,29 @@ public class StorageService {
     }
     private Path createDirectoryStructure(Course course) throws IOException {
         Path basePath = Paths.get(uploadDir);
-        Path coursePath = basePath.resolve(sanitizeName(course.getFolder().getName()));
 
+        // Build the folder path recursively
+        Path folderPath = buildFolderPath(basePath, course.getFolder());
 
-        Files.createDirectories(coursePath);
+        // Add the course name as a subdirectory
+        Path coursePath = folderPath.resolve(sanitizeName(course.getName()));
+
+        Files.createDirectories(coursePath); // Create the entire directory structure
 
         return coursePath;
+    }
+
+    // Recursive helper method to build the folder path
+    private Path buildFolderPath(Path basePath, Folder folder) {
+        if (folder == null) {
+            return basePath; // Handle cases where folder is null (though it shouldn't be in your case)
+        }
+
+        // Recursively build the path from the parent folder
+        Path parentPath = (folder.getParentFolder() != null) ?
+                buildFolderPath(basePath, folder.getParentFolder()) : // Recursive call
+                basePath; // Base case: no parent folder, start from basePath
+        return parentPath.resolve(sanitizeName(folder.getName())); // Add the current folder name
     }
 
     private String sanitizeName(String name) {
@@ -221,8 +239,14 @@ public ByteArrayResource getResourceFromS3(String fileName, Course course) throw
     }
 
     public Path getFilePath(String fileName, Course course) {
-        return Paths.get(uploadDir)
-                .resolve(sanitizeName(course.getFolder().getName()));
+        Path basePath = Paths.get(uploadDir);
+        // Build the folder path recursively
+        Path folderPath = buildFolderPath(basePath, course.getFolder());
+
+        // Add the course name as a subdirectory
+        Path coursePath = folderPath.resolve(sanitizeName(course.getName()));
+
+        return coursePath.resolve(sanitizeName(fileName)); // Add course name as a sub-directory
     }
 
     public String getMimeType(String fileName) {
