@@ -49,7 +49,34 @@
   <nav class="profile-nav">
     <a href="/" class="button">Home</a>
     <a href="/logout" class="button">Logout</a>
+    <!-- Show the Admin link only for ADMIN users -->
+    <a th:if="${user.appUserRole.ADMIN}" th:href="@{/admin/licenseRequests}" class="button">Manage License Requests</a>
   </nav>
+    <a href="#" class="button" data-toggle="modal" data-target="#licenseRequestModal">
+      Get a teaching license
+    </a>
+  </div>
+
+  <div class="modal fade" id="licenseRequestModal" tabindex="-1" role="dialog" aria-labelledby="licenseRequestModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="licenseRequestModalLabel">Request Teaching License</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form th:action="@{/licenseRequest}" method="post">
+            <div class="form-group">
+              <label for="requestReason">Reason for Request:</label>
+              <textarea class="form-control" id="requestReason" name="reason" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Request</button>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 </main>
 

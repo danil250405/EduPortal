@@ -142,4 +142,7 @@ public class AppUserService implements UserDetailsService {
     public int enableAppUser(String email) {
         return appUserRepository.enableAppUser(email);
     }
+    public void changeUserRole(AppUser appUser, AppUserRole appUserRole) {
+        appUserRepository.updateAppUserRole((long) appUser.getId(), appUserRole);
+    }
 }

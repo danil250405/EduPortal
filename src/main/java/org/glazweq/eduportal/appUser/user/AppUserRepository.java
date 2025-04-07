@@ -6,6 +6,7 @@ import org.glazweq.eduportal.education.course.Course;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,4 +27,9 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
     List<AppUser> findByAppUserRole(AppUserRole role);
 //    List<TeacherCourse> getCoursesAssignedToUser(AppUser user);
+@Transactional
+@Modifying
+@Query("UPDATE AppUser a SET a.appUserRole = :role WHERE a.id = :userId")
+void updateAppUserRole(@Param("userId") Long userId, @Param("role") AppUserRole role);
+
 }
