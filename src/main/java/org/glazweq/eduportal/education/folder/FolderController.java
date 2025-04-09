@@ -1,9 +1,11 @@
 package org.glazweq.eduportal.education.folder;
 
+import org.glazweq.eduportal.appUser.user.AppUser;
 import org.glazweq.eduportal.education.course.Course;
 import org.glazweq.eduportal.education.course.CourseService;
 
 import org.glazweq.eduportal.exeptions.DuplicateFolderNameException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -47,7 +49,9 @@ public class FolderController {
     @PostMapping("/add")
     public String addFolder(@ModelAttribute Folder folder, @RequestParam(required = false) Long parentId, RedirectAttributes redirectAttributes) {
         try {
-            folderService.createFolder(folder.getName(), folder.getAccess(), parentId);
+            AppUser user = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            folderService.createFolder(folder.getName(), user, parentId);
 
         } catch (DuplicateFolderNameException e) {
             // Add error message for Thymeleaf template

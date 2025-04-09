@@ -41,17 +41,17 @@
         </ul>
 
         <!-- Форма для добавления папки -->
+        <div th:if="${currentUser.appUserRole.name() == 'ADMIN'}">
+
         <form class="edu-form" th:action="@{/folders/add}" method="post">
             <div class="form-item">
                 <label>Folder name: </label>
                 <input required type="text" name="name"/>
             </div>
-            <div class="form-item">
-                <label>Access: </label>
-                <input required type="text" name="access"/>
-            </div>
+
             <button class="main-btn" type="submit">Add Folder</button>
         </form>
+        </div>
     </div>
 
     <!-- Модальное окно подтверждения удаления -->

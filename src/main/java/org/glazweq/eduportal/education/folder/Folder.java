@@ -18,9 +18,9 @@ public class Folder {
     private Long id;
     @Column(nullable = false, unique = true)
     private String name;
-    @Column(nullable = false)
-    private String access;
-
+    @ManyToOne(fetch = FetchType.LAZY) // Consider using LAZY loading
+    @JoinColumn(name = "owner_id", nullable = false) // Correct foreign key column name
+    private AppUser owner;
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private Folder parentFolder;

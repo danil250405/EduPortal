@@ -1,5 +1,6 @@
 package org.glazweq.eduportal.education.folder;
 
+import org.glazweq.eduportal.appUser.user.AppUser;
 import org.glazweq.eduportal.exeptions.DuplicateFolderNameException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class FolderService {
     }
 
     // Создать папку
-    public void createFolder(String name, String access, Long parentId) {
+    public void createFolder(String name, AppUser owner, Long parentId) {
 
         boolean exists = folderRepository.existsByName(name);
         if (exists) {
@@ -36,7 +37,7 @@ public class FolderService {
         }
         Folder folder = new Folder();
         folder.setName(name);
-        folder.setAccess(access);
+        folder.setOwner(owner);
 
         if (parentId != null) {
             Folder parentFolder = folderRepository.findById(parentId)
