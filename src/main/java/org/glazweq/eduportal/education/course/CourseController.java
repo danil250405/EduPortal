@@ -13,6 +13,7 @@ import org.glazweq.eduportal.storage.StorageService;
 import org.glazweq.eduportal.storage.file_metadata.FileMetadata;
 import org.glazweq.eduportal.storage.file_metadata.FileMetadataService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +41,11 @@ public class CourseController {
         Course course = new Course();
         course.setName(courseName);
         course.setFolder(folder);
+        AppUser user = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        course.setOwner(user);
         courseService.addCourse(course);
+        teacherCourseService.assignTeacherToSubject((long) user.getId(), course.getId());
         return "redirect:/folders/" + folderId;
     }
 //    @{/folders/{folderId}(folderId=${subfolder.id})/course/{courseId}(courseId=${course.id})}
@@ -81,7 +86,13 @@ public class CourseController {
 //        model.addAttribute("pdfFiles", pdfFiles);
 //        model.addAttribute("mp4Files", mp4Files);
         List<FileMetadata> files = fileMetadataService.takeFilesByCourse(course);
+        AppUser currentUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        boolean canDeleteFiles = currentUser.getAppUserRole().name().equals("ADMIN") ||
+                (course.getOwner() != null && course.getOwner().getId() == (currentUser.getId())) ||
+                course.getTeacherCourses().stream()
+                        .anyMatch(tc -> tc.getTeacher().getId() == (currentUser.getId()));
+        model.addAttribute("canDeleteFiles", canDeleteFiles);
         List<AppUser> availableTeachers = appUserService.getAvailableTeachers(course.getId());
         if (!availableTeachers.isEmpty()) {
             model.addAttribute("availableTeachers", availableTeachers);

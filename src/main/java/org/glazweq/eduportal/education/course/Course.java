@@ -3,6 +3,7 @@ package org.glazweq.eduportal.education.course;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.glazweq.eduportal.appUser.user.AppUser;
 import org.glazweq.eduportal.storage.file_metadata.FileMetadata;
 import org.glazweq.eduportal.appUser.teacherSubject.TeacherCourse;
 import org.glazweq.eduportal.education.folder.Folder;
@@ -25,6 +26,10 @@ public class Course {
     private String description;
     @Column
     private LocalDateTime createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false) // Foreign key to AppUser table
+    private AppUser owner; // Course owner
 
     @ManyToOne
     @JoinColumn(name = "folder_id", nullable = false)  // Привязка к папке
