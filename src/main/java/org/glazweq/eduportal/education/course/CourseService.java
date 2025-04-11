@@ -2,8 +2,12 @@ package org.glazweq.eduportal.education.course;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.glazweq.eduportal.appUser.teacherSubject.TeacherCourse;
+import org.glazweq.eduportal.appUser.teacherSubject.TeacherCourseRepository;
 import org.glazweq.eduportal.education.folder.Folder;
 
+import org.glazweq.eduportal.storage.file_metadata.FileMetadataRepository;
+import org.glazweq.eduportal.storage.file_metadata.FileMetadataService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 public class CourseService {
     CourseRepository courseRepository;
+    FileMetadataRepository fileMetadataRepository;
+    TeacherCourseRepository teacherCourseRepository;
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
     }
@@ -23,13 +29,22 @@ public class CourseService {
     public void addCourse(Course course) {
         courseRepository.save(course);
     }
-
-    public boolean deleteCourse(Long courseId) {
-        if (courseRepository.existsById(courseId)) {
-            courseRepository.deleteById(courseId);
-            return true;
+    public boolean hasFiles(Long courseId) {
+        return fileMetadataRepository.countByCourseId(courseId) > 0;
+    }
+    public boolean deleteCourse(Long id) {
+        Course course = courseRepository.findById(id).orElse(null);
+        if (course == null) {
+            return false; // Course doesn't exist, so can't delete
         }
-        return false;
+        if (hasFiles(id)) {
+            return false;  //Prevent Deletion with Files
+        }
+        // Remove all teacher associations before deleting the course
+        List<TeacherCourse> teacherCourses = teacherCourseRepository.findByCourseId(id);
+        teacherCourseRepository.deleteAll(teacherCourses); // Delete in bulk
+        courseRepository.delete(course);
+        return true; // Deletion was successful
     }
 
     public Course getCourseById(Long id) {

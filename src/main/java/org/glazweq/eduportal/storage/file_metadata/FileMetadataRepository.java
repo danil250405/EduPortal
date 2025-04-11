@@ -12,4 +12,5 @@ public interface FileMetadataRepository extends JpaRepository<FileMetadata, Long
     List<FileMetadata> getFileMetadataByCourseAndExtension(Course course, String Extension);
     List<FileMetadata> getFileMetadataByCourse(Course course);
     FileMetadata getFileMetadataByCodingFileName(String codingFileName);
+    Long countByCourseId(Long courseId);
 }

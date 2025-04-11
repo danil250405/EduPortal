@@ -45,16 +45,23 @@ public class CourseController {
     }
 //    @{/folders/{folderId}(folderId=${subfolder.id})/course/{courseId}(courseId=${course.id})}
 
-    @PostMapping("/course/delete")
-    public String deleteSubject(@RequestParam Long courseId,
-                                @RequestParam Long folderId,
-                                RedirectAttributes redirectAttributes) {
-        boolean isDeleted = courseService.deleteCourse(courseId);
-        String infoMessage = isDeleted ? "course deleted successfully" : "You can't delete this course";
-        redirectAttributes.addFlashAttribute("infoMessage", infoMessage);
+    @PostMapping("/course/delete/{id}")
+    public String deleteCourse(@PathVariable Long id, RedirectAttributes redirectAttributes, Model model) {
+        Course course = courseService.getCourseById(id);
+        Long folderId = course.getFolder().getId();
+        if (!courseService.hasFiles(id)) {
+            boolean isDeleted = courseService.deleteCourse(id);
+            if (isDeleted) {
+                redirectAttributes.addFlashAttribute("infoMessage", "Course deleted successfully");
+            } else {
+                redirectAttributes.addFlashAttribute("infoMessage", "Failed to delete course");
+            }
+        } else {
+            redirectAttributes.addFlashAttribute("infoMessage", "Cannot delete course with files.");
+        }
+        model.addAttribute("size",0); // You also should add this parameter in view, to prevent errors
         return "redirect:/folders/" + folderId;
     }
-
 
         @GetMapping("/coursesAll")
     public String showCoursesPage(Model model) {
@@ -123,8 +130,7 @@ public class CourseController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error removing teacher: " + e.getMessage());
         }
-        Course course = courseService.getCourseById(courseId);
-        return "redirect:/folders/" + course.getFolder().getId() + "/" + courseId;
+        return getRedirectUrl(courseId);
     }
 
     @PostMapping("/file/upload")

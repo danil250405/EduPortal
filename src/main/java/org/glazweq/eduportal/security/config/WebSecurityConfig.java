@@ -67,7 +67,9 @@ public class WebSecurityConfig  {
                                 .requestMatchers("/admin/remove-license").hasAnyAuthority("ADMIN", "TEACHER")
                                 .requestMatchers("/admin/delete-license").hasAnyAuthority("ADMIN")
                                 .requestMatchers("/course/add").hasAnyAuthority("ADMIN", "TEACHER")
-                                .requestMatchers("/course/delete").hasAnyAuthority("ADMIN", "TEACHER")
+                                .requestMatchers("/course/delete/**").hasAnyAuthority("ADMIN", "TEACHER")
+                                .requestMatchers("/updateCourse/**").hasAnyAuthority("ADMIN", "TEACHER")
+
                                 .requestMatchers("/file/delete").hasAnyAuthority("ADMIN", "TEACHER")
                                 .requestMatchers("/file/upload").hasAnyAuthority("ADMIN", "TEACHER")
                                 .requestMatchers("/file/download/").authenticated()
