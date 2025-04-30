@@ -19,15 +19,16 @@ public class CourseService {
     FileMetadataRepository fileMetadataRepository;
     TeacherCourseRepository teacherCourseRepository;
     public List<Course> getAllCourses() {
-        return courseRepository.findAll();
+        return courseRepository.findByIsLinkFalse();
     }
 
     public List<Course> getCoursesByFolder(Folder folder) {
         return courseRepository.findAllByFolder(folder);
     }
 
-    public void addCourse(Course course) {
+    public Course addCourse(Course course) {
         courseRepository.save(course);
+        return course;
     }
     public boolean hasFiles(Long courseId) {
         return fileMetadataRepository.countByCourseId(courseId) > 0;

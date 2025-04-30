@@ -416,3 +416,20 @@
 h2{
     color: white;
 }
+
+.form-check-input-new{
+    width: 15px;
+    background-color: ghostwhite;
+    margin-right: 10px;
+}
+.form-check{
+    color: white;
+    display: flex;
+    margin: auto 100% auto auto;
+}
+.form-control{
+    color: white;
+}
+.form-text{
+    color: white;
+}

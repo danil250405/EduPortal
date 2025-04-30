@@ -52,23 +52,61 @@
 
         <div th:if="${currentUser.appUserRole.name() == 'ADMIN' || currentUser.appUserRole.name() == 'TEACHER'}">
 
-        <form class="edu-form" th:action="@{/folders/add}" method="post">
-            <div class="form-item">
-                <label>Folder name: </label>
-                <input required type="text" name="name"/>
-            </div>
-            <input type="hidden" name="parentId" th:value="${folder.id}"/>
-            <button class="main-btn" type="submit">Add Folder</button>
-        </form>
+            <form class="edu-form" th:action="@{/folders/add}" method="post">
+                <h3>Add New Folder</h3>
+                <input type="hidden" name="parentId" th:value="${folder.id}" /> <!-- ID текущей папки как родительской -->
 
-        <form class="edu-form" th:action="@{/course/add}" method="post">
-            <div class="form-item">
-                <label>course name:</label>
-                <input type="text" id="courseName" name="courseName"/>
-            </div>
-            <input type="hidden" th:value="${folder.id}" id="folderId" name="folderId"/>
-            <button type="submit">Add course</button>
-        </form>
+                <div class="form-item">
+                    <label for="folderName">Folder Name:</label>
+                    <input required type="text" class="form-control" name="name" id="folderName"/>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input-new" type="checkbox" value="true" name="isLink" id="folderIsLinkCheckbox">
+                    <label class="form-check-label" for="folderIsLinkCheckbox">
+                        Is this a link?
+                    </label>
+                </div>
+
+                <div class="form-item" id="folderLinkUrlGroup" style="display: none;">
+                    <label for="folderLinkUrl">URL:</label>
+                    <input type="url" class="form-control" name="linkUrl" id="folderLinkUrl" placeholder="https://example.com or /folders/123"/>
+                    <small class="form-text text-muted">Enter external URL or internal path.</small>
+                </div>
+
+                <button class="main-btn" type="submit">Add Folder</button>
+            </form>
+        </div>
+
+        <hr> <!-- Разделитель для ясности -->
+
+        <!-- Форма добавления Курса -->
+        <div th:if="${currentUser.appUserRole.name() == 'ADMIN' || currentUser.appUserRole.name() == 'TEACHER'}">
+
+            <form class="edu-form" th:action="@{/course/add}" method="post">
+                <h3>Add New Course</h3>
+                <input type="hidden" th:value="${folder.id}" name="folderId"/> <!-- ID текущей папки, к которой принадлежит курс -->
+
+                <div class="form-item">
+                    <label for="courseNameInput">Course Name:</label> <!-- Изменил id, чтобы избежать дублирования -->
+                    <input required type="text" class="form-control" id="courseNameInput" name="courseName"/>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input-new" type="checkbox" value="true" name="isLink" id="courseIsLinkCheckbox">
+                    <label class="form-check-label" for="courseIsLinkCheckbox">
+                        Is this a link?
+                    </label>
+                </div>
+
+                <div class="form-item" id="courseLinkUrlGroup" style="display: none;">
+                    <label for="courseLinkUrl">URL:</label>
+                    <input type="url" class="form-control" name="linkUrl" id="courseLinkUrl" placeholder="https://example.com or /folders/123"/>
+                    <small class="form-text text-muted">Enter external URL or internal path.</small>
+                </div>
+
+                <button type="submit" class="main-btn">Add Course</button> <!-- Изменил текст кнопки -->
+            </form>
         </div>
 
 
@@ -138,6 +176,51 @@
             modal.find('#del-span-folder-name').text(folderName);
             modal.find('#del-folder-name').val(folderName);
         });
+        // --- Логика для формы добавления Папки ---
+        const folderIsLinkCheckbox = document.getElementById('folderIsLinkCheckbox');
+        const folderLinkUrlGroup = document.getElementById('folderLinkUrlGroup');
+        const folderLinkUrlInput = document.getElementById('folderLinkUrl');
+
+        function toggleFolderLinkUrlField() {
+            if (folderIsLinkCheckbox.checked) {
+                folderLinkUrlGroup.style.display = 'block';
+                folderLinkUrlInput.required = true;
+            } else {
+                folderLinkUrlGroup.style.display = 'none';
+                folderLinkUrlInput.required = false;
+                folderLinkUrlInput.value = '';
+            }
+        }
+        // Проверка при загрузке страницы
+        if(folderIsLinkCheckbox) { // Убедимся, что элемент существует
+            toggleFolderLinkUrlField();
+            folderIsLinkCheckbox.addEventListener('change', toggleFolderLinkUrlField);
+        }
+
+
+        // --- Логика для формы добавления Курса ---
+        const courseIsLinkCheckbox = document.getElementById('courseIsLinkCheckbox');
+        const courseLinkUrlGroup = document.getElementById('courseLinkUrlGroup');
+        const courseLinkUrlInput = document.getElementById('courseLinkUrl');
+
+        function toggleCourseLinkUrlField() {
+            if (courseIsLinkCheckbox.checked) {
+                courseLinkUrlGroup.style.display = 'block';
+                courseLinkUrlInput.required = true;
+            } else {
+                courseLinkUrlGroup.style.display = 'none';
+                courseLinkUrlInput.required = false;
+                courseLinkUrlInput.value = '';
+            }
+        }
+        // Проверка при загрузке страницы
+        if(courseIsLinkCheckbox) { // Убедимся, что элемент существует
+            toggleCourseLinkUrlField();
+            courseIsLinkCheckbox.addEventListener('change', toggleCourseLinkUrlField);
+        }
+
+
     });
+
 </script>
 </html>

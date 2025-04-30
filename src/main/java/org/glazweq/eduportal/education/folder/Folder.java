@@ -28,5 +28,11 @@ public class Folder {
     // Список вложенных папок
     @OneToMany(mappedBy = "parentFolder", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Folder> subFolders = new ArrayList<>();
+// In Folder.java
 
+    @Column(name = "is_link")
+    private boolean isLink = false; // default to not being a link
+
+    @Column(name = "link_url")
+    private String linkUrl; // URL if this is a link, null otherwise
 }

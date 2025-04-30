@@ -22,8 +22,10 @@ public class Course {
 
     @Column(nullable = false)
     private String name;
-    @Column
+    @Lob
+    @Column(columnDefinition = "TEXT") // Explicitly define the column type as TEXT
     private String description;
+
     @Column
     private LocalDateTime createdAt;
 
@@ -44,5 +46,13 @@ public class Course {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();  // Устанавливаем текущую дату и время при создании записи
     }
+// In Course.java
+
+    @Column(name = "is_link")
+    private boolean isLink = false; // default to not being a link
+
+    @Column(name = "link_url")
+    private String linkUrl; // URL if this is a link, null otherwise
+
 
 }

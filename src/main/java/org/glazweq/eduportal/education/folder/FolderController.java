@@ -31,42 +31,92 @@ public class FolderController {
         return "folders";
     }
 
-    // Просмотр содержимого папки
     @GetMapping("/{folderId}")
-    public String viewFolder(@PathVariable Long folderId, Model model) {
-        System.out.printf("wwwwwww");
+    public String viewFolder(@PathVariable Long folderId, Model model, RedirectAttributes redirectAttributes) {
+
         Folder folder = folderService.getFolderById(folderId);
-        List<Folder> subfolders = folderService.getSubfolders(folderId);
-        List<Course> courses = courseService.getCoursesByFolder(folder);
+
+        // Handle case where folder doesn't exist
+        if (folder == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Folder with ID " + folderId + " not found.");
+            // Determine where to redirect if folder not found
+            // Maybe redirect to the root folder list?
+            return "redirect:/folders"; // Adjust as needed
+        }
+
+        // --- Check if it's a link ---
+        if (folder.isLink()) {
+            String redirectUrl = folder.getLinkUrl();
+            // Basic validation: Ensure URL is not empty
+            if (redirectUrl != null && !redirectUrl.isBlank()) {
+                // Prepend http:// if it's likely an external link without a protocol
+                if (!redirectUrl.toLowerCase().startsWith("http://") &&
+                        !redirectUrl.toLowerCase().startsWith("https://") &&
+                        !redirectUrl.startsWith("/")) {
+                    redirectUrl = "http://" + redirectUrl;
+                }
+                return "redirect:" + redirectUrl; // Perform the redirect
+            } else {
+                // Handle invalid/empty link URL case
+                redirectAttributes.addFlashAttribute("errorMessage", "The link URL for folder '" + folder.getName() + "' is invalid or missing.");
+                // Redirect to parent folder if possible, otherwise root
+                Long parentId = (folder.getParentFolder() != null) ? folder.getParentFolder().getId() : null;
+                String redirectPath = (parentId == null) ? "/folders" : "/folders/" + parentId;
+                return "redirect:" + redirectPath;
+            }
+        }
+
+        // --- If it's NOT a link, proceed to show the folder details page ---
+        List<Folder> subfolders = folderService.getSubfolders(folderId); // Assuming this method exists
+        List<Course> courses = courseService.getCoursesByFolder(folder); // Assuming this method exists
+
         model.addAttribute("courses", courses);
         model.addAttribute("folder", folder);
         model.addAttribute("subfolders", subfolders);
-        model.addAttribute("newFolder", new Folder());
-        return "folder-detail";
+        // Add a new Folder object for the add form if needed, but maybe handle this differently
+        // model.addAttribute("newFolder", new Folder()); // Consider if this is still needed here
+
+        return "folder-detail"; // Return the name of your folder details template
     }
 //TODO: removing folders
     // Добавление новой папки
     @PostMapping("/add")
-    public String addFolder(@ModelAttribute Folder folder, @RequestParam(required = false) Long parentId, RedirectAttributes redirectAttributes) {
+
+    public String addFolder(@RequestParam String name, // Получаем имя папки
+                            @RequestParam(required = false) Long parentId,
+                            @RequestParam(required = false, defaultValue = "false") boolean isLink, // Получаем значение чекбокса
+                            @RequestParam(required = false) String linkUrl, // Получаем URL, если это ссылка
+                            RedirectAttributes redirectAttributes) {
+
+        // Валидация: если это ссылка, URL не должен быть пустым
+        if (isLink && (linkUrl == null || linkUrl.isBlank())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "URL cannot be empty when creating a link folder.");
+            // Определяем, куда перенаправить в случае ошибки
+            String redirectPath = (parentId == null) ? "/folders" : "/folders/" + parentId;
+            return "redirect:" + redirectPath;
+        }
+
         try {
             AppUser user = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-            folderService.createFolder(folder.getName(), user, parentId);
+            // Вызываем обновленный метод сервиса, передавая isLink и linkUrl
+            folderService.createFolder(name, user, parentId, isLink, linkUrl);
+            redirectAttributes.addFlashAttribute("infoMessage", "Folder '" + name + "' created successfully.");
 
         } catch (DuplicateFolderNameException e) {
-            // Add error message for Thymeleaf template
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-
-            System.out.println(e.getMessage());
-            // Return to the form page instead of redirecting
-
+            System.out.println(e.getMessage()); // Логирование ошибки
+        } catch (Exception e) { // Общий обработчик ошибок
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while creating the folder.");
+            // Рекомендуется логировать e.printStackTrace();
         }
+
+        // Перенаправляем на страницу родительской папки или на главную страницу папок
         if (parentId == null) {
             return "redirect:/folders";
+        } else {
+            return "redirect:/folders/" + parentId;
         }
-        else return "redirect:/folders/" + parentId;
-
-
     }
 
     // Удаление папки

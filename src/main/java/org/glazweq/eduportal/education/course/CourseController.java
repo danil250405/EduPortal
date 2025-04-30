@@ -34,18 +34,40 @@ public class CourseController {
 
     CourseService courseService;
     @PostMapping("/course/add")
-    public String addSubject(@RequestParam String courseName,
-                             @RequestParam Long folderId) {
+    public String addCourse(@RequestParam String courseName,
+                            @RequestParam Long folderId,
+                            @RequestParam(required = false, defaultValue = "false") boolean isLink, // Получаем значение чекбокса
+                            @RequestParam(required = false) String linkUrl, // Получаем URL, если это ссылка
+                            RedirectAttributes redirectAttributes) {
+
+        // Валидация: если это ссылка, URL не должен быть пустым
+        if (isLink && (linkUrl == null || linkUrl.isBlank())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "URL cannot be empty when creating a link course.");
+            return "redirect:/folders/" + folderId; // Возвращаемся на страницу папки
+        }
+
         Folder folder = folderService.getFolderById(folderId);
-        System.out.printf("=================++++++++++++============");
+        if (folder == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Parent folder not found.");
+            return "redirect:/folders"; // Или другая обработка ошибки
+        }
+
         Course course = new Course();
         course.setName(courseName);
         course.setFolder(folder);
         AppUser user = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         course.setOwner(user);
-        courseService.addCourse(course);
-        teacherCourseService.assignTeacherToSubject((long) user.getId(), course.getId());
+        course.setLink(isLink); // Устанавливаем флаг ссылки
+        course.setLinkUrl(linkUrl); // Устанавливаем URL ссылки
+
+        Course savedCourse = courseService.addCourse(course); // Сохраняем курс
+
+        // Назначаем создателя преподавателем (если такая логика нужна и это не просто ссылка)
+        if (savedCourse != null && !isLink) {
+            teacherCourseService.assignTeacherToSubject((long) user.getId(), savedCourse.getId());
+        }
+
+        redirectAttributes.addFlashAttribute("infoMessage", "Course '" + courseName + "' created successfully.");
         return "redirect:/folders/" + folderId;
     }
 //    @{/folders/{folderId}(folderId=${subfolder.id})/course/{courseId}(courseId=${course.id})}
@@ -74,35 +96,68 @@ public class CourseController {
         model.addAttribute("courses", courses);
         return "subjects-all";
     }
+
     @GetMapping("/folders/{folderId}/course/{courseId}")
-    public String redirectToSubjectPage(@PathVariable("courseId") Long courseId,
-                                        @PathVariable("folderId") Long folderId,
-                                        Model model) {
+    public String redirectToCoursePage(@PathVariable("courseId") Long courseId,
+                                       @PathVariable("folderId") Long folderId, // Keep folderId if needed for context/breadcrumbs
+                                       Model model,
+                                       RedirectAttributes redirectAttributes) { // Use RedirectAttributes
 
         Course course = courseService.getCourseById(courseId);
 
-//        List<FileMetadata> pdfFiles = fileMetadataService.takeFilesBySubjectAndExtension(subject, "pdf");
-//        List<FileMetadata> mp4Files = fileMetadataService.takeFilesBySubjectAndExtension(subject, "mp4");
-//        model.addAttribute("pdfFiles", pdfFiles);
-//        model.addAttribute("mp4Files", mp4Files);
-        List<FileMetadata> files = fileMetadataService.takeFilesByCourse(course);
+        // Handle case where course doesn't exist
+        if (course == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Course with ID " + courseId + " not found.");
+            return "redirect:/folders/" + folderId; // Redirect back to the folder page
+        }
+
+        // --- Check if it's a link ---
+        if (course.isLink()) {
+            String redirectUrl = course.getLinkUrl();
+            // Basic validation: Ensure URL is not empty
+            if (redirectUrl != null && !redirectUrl.isBlank()) {
+                // Prepend http:// if it's likely an external link without a protocol (basic check)
+                if (!redirectUrl.toLowerCase().startsWith("http://") &&
+                        !redirectUrl.toLowerCase().startsWith("https://") &&
+                        !redirectUrl.startsWith("/")) { // Don't prepend for internal paths
+                    redirectUrl = "http://" + redirectUrl;
+                }
+                return "redirect:" + redirectUrl; // Perform the redirect
+            } else {
+                // Handle invalid/empty link URL case
+                redirectAttributes.addFlashAttribute("errorMessage", "The link URL for course '" + course.getName() + "' is invalid or missing.");
+                return "redirect:/folders/" + folderId; // Redirect back to the folder page
+            }
+        }
+
+        // --- If it's NOT a link, proceed to show the course details page ---
+        List<FileMetadata> files = fileMetadataService.takeFilesByCourse(course); // Assuming this method exists
         AppUser currentUser = (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        boolean canDeleteFiles = currentUser.getAppUserRole().name().equals("ADMIN") ||
-                (course.getOwner() != null && course.getOwner().getId() == (currentUser.getId())) ||
-                course.getTeacherCourses().stream()
-                        .anyMatch(tc -> tc.getTeacher().getId() == (currentUser.getId()));
+        // Determine if the current user can delete files (owner, admin, or assigned teacher)
+        boolean canDeleteFiles = currentUser != null && (
+                currentUser.getAppUserRole().name().equals("ADMIN") ||
+                        (course.getOwner() != null && course.getOwner().getId() == currentUser.getId()) ||
+                        course.getTeacherCourses().stream()
+                                .anyMatch(tc -> tc.getTeacher().getId() == currentUser.getId())
+        );
+
         model.addAttribute("canDeleteFiles", canDeleteFiles);
+
+        // Get available teachers (example, adjust method signature as needed)
         List<AppUser> availableTeachers = appUserService.getAvailableTeachers(course.getId());
-        if (!availableTeachers.isEmpty()) {
+        if (availableTeachers != null && !availableTeachers.isEmpty()) { // Check if list is not null
             model.addAttribute("availableTeachers", availableTeachers);
+        } else {
+            model.addAttribute("availableTeachers", List.of()); // Ensure it's never null for Thymeleaf
         }
+
 
         model.addAttribute("files", files);
         model.addAttribute("course", course);
+        model.addAttribute("folder", course.getFolder()); // Add folder for context if needed
 
-        return "subject_data-page";
-
+        return "subject_data-page"; // Return the name of your course details template
     }
     @PostMapping("/course/add-teacher")
     public String addTeacher(@RequestParam Long courseId,

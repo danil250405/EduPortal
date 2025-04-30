@@ -1,5 +1,6 @@
 package org.glazweq.eduportal.education.folder;
 
+import jakarta.transaction.Transactional;
 import org.glazweq.eduportal.appUser.user.AppUser;
 import org.glazweq.eduportal.exeptions.DuplicateFolderNameException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,26 +30,30 @@ public class FolderService {
     }
 
     // Создать папку
-    public void createFolder(String name, AppUser owner, Long parentId) {
+    @Transactional // Рекомендуется для операций сохранения/изменения
+    public Folder createFolder(String name, AppUser owner, Long parentId, boolean isLink, String linkUrl) throws DuplicateFolderNameException {
 
-        boolean exists = folderRepository.existsByName(name);
-        if (exists) {
-            throw new DuplicateFolderNameException("A folder with the '" + name + "' already exists");
+        Folder parentFolder = null;
+        if (parentId != null) {
+            parentFolder = folderRepository.findById(parentId)
+                    .orElseThrow(() -> new RuntimeException("Parent folder not found with ID: " + parentId));
         }
+
+        // Проверка на дубликат имени в той же родительской папке
+        if (folderRepository.existsByNameAndParentFolder(name, parentFolder)) {
+            throw new DuplicateFolderNameException("A folder with the name '" + name + "' already exists in this location.");
+        }
+
         Folder folder = new Folder();
         folder.setName(name);
         folder.setOwner(owner);
+        folder.setParentFolder(parentFolder);
+        folder.setLink(isLink); // Устанавливаем флаг ссылки
+        folder.setLinkUrl(linkUrl); // Устанавливаем URL ссылки
 
-        if (parentId != null) {
-            Folder parentFolder = folderRepository.findById(parentId)
-                    .orElseThrow(() -> new RuntimeException("Родительская папка не найдена"));
-            folder.setParentFolder(parentFolder);
-        }
-
-        folderRepository.save(folder);
+        return folderRepository.save(folder);
     }
 
-    // Удалить папку
     public String deleteFolder(Long id) {
         if (folderRepository.existsFolderByParentFolderId(id)) {
             return "Unable to delete folder. Please delete all contents of the folder first. ";

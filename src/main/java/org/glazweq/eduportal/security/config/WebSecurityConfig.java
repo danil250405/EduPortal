@@ -62,7 +62,7 @@ public class WebSecurityConfig  {
                                 .requestMatchers("/folders/add").hasAnyAuthority("ADMIN", "TEACHER")
                                 .requestMatchers("/course/add-teacher").hasAnyAuthority("ADMIN", "TEACHER")
                                 .requestMatchers("/course/remove-teacher").hasAnyAuthority("ADMIN", "TEACHER")
-                                .requestMatchers("/admin/licenseRequests").hasAnyAuthority("ADMIN", "TEACHER")
+                                .requestMatchers("/admin/licenseRequests/**").hasAnyAuthority("ADMIN", "TEACHER")
                                 .requestMatchers("/admin/add-license").hasAnyAuthority("ADMIN", "TEACHER")
                                 .requestMatchers("/admin/remove-license").hasAnyAuthority("ADMIN", "TEACHER")
                                 .requestMatchers("/admin/delete-license").hasAnyAuthority("ADMIN")
@@ -77,6 +77,7 @@ public class WebSecurityConfig  {
                                 .requestMatchers("/coursesAll").authenticated()
                                 .requestMatchers("/teachers").authenticated()
                                 .requestMatchers("/licenseRequests").authenticated()
+                                .requestMatchers("/licenseRequest").hasAnyAuthority("USER")
                                 .requestMatchers("/teacher/**").authenticated()
 //                                TODO: permit only admins
 
